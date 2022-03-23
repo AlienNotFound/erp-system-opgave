@@ -8,13 +8,13 @@ public class ProductListScreen : Screen
 
     protected override void Draw()
     {
-        //ProductNumber, Name, StockUnits, BuyPrice, SalesPrice, AvancePercent
+        //Guide: https://github.com/sinb-dev/TECHCOOL/tree/master/UI
         Clear(this);
-        ListPage<ProductList> listPage = new ListPage<ProductList>();
+        ListPage<ProductDetails> listPage = new ListPage<ProductDetails>();
 
-        listPage.Add(new ProductList(001, "Gaffel med meget", 100, 10, 50, 50));
-        listPage.Add(new ProductList(002, "Tallerken med lidt", 350, 20, 100, 55));
-        listPage.Add(new ProductList(003, "Kop fuld af tom", 200, 5, 20, 10));
+        listPage.Add(new ProductDetails(001, "Gaffel med meget", "Lang beskrivelse", 100, 10, 50, "Hylde 5", 100, "Unit?",50, 25));
+        listPage.Add(new ProductDetails(002, "Tallerken med lidt", "Lang beskrivelse", 350, 20, 100, "Hylde 2",350, "Unit?",55, 125));
+        listPage.Add(new ProductDetails(003, "Kop fuld af tom", "Lang beskrivelse", 200, 5, 20, "Hylde 72",200,"Unit?",10, 100));
         
         listPage.AddColumn("Varenr.", "ProductNumber");
         listPage.AddColumn("Produktnavn", "Name");
@@ -22,7 +22,13 @@ public class ProductListScreen : Screen
         listPage.AddColumn("Købspris", "BuyPrice");
         listPage.AddColumn("Salgspris", "SalesPrice");
         listPage.AddColumn("Avance i procent", "AvancePercent");
+        
+        //Prints the selected product name out in the console, after pressing enter. Preparation for P3 
+        Console.WriteLine("Valgte: " + listPage.Select().Name);
+        
+        /*Menu menu = new Menu();
 
-        listPage.Select();
+        menu.Add(new ProductDetailScreen());
+        menu.Start(this);*/
     }
 }
