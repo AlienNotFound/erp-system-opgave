@@ -2,6 +2,7 @@ namespace ErpSystemOpgave.Data;
 
 public class Person
 {
+    // ? Lav `ContactInfo` til sin egen klasse?
     public Person(string firstName, string lastName, Address address, string phoneNumber, string? email)
     {
         FirstName = firstName;
