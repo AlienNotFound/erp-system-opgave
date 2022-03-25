@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using ErpSystemOpgave;
 using ErpSystemOpgave.Data;
 using TECHCOOL.UI;
 
@@ -30,12 +31,10 @@ public class ProductDetailScreen : Screen
 
         // !! Dette er lidt et hack. Her bruger vi en `ListPage` som menu,
         // !! da den dedikerede `Menu` rydder skaermen.
-        ListPage<MenuItem> menu = new();
-        menu.AddColumn("Action:", "Description");
-        menu.Add(new MenuItem("Go back", () => this.Quit()));
-        menu.Add(new MenuItem("Update", () => Screen.Display(new ProductUpdateScreen(_product))));
-        menu.Select().Action.Invoke();
+        Program.ShowMenu(
+            ("Go back", () => this.Quit()),
+            ("Update", () => Screen.Display(new ProductUpdateScreen(_product)))
+        );
     }
 }
 
-public record MenuItem(string Description, Action Action);
