@@ -7,4 +7,10 @@ public class TestTest
     {
         Assert.True(true);
     }
+
+    [Fact]
+    public void TheTestThatTestsTheTestsFails()
+    {
+        Assert.True(false);
+    }
 }
