@@ -9,17 +9,18 @@ namespace ErpSystemOpgave
 {
     public class DataBase
     {
-        public int GetSalesOrderById(int orderId)
+        public List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
+        //salesOrderHeaders.Add(new SalesOrderHeader(3, 24,OrderState.Created,20, new List<SalesOrderLine>()));
+        public SalesOrderHeader GetSalesOrderById(int orderId)
         {
-            List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-            salesOrderHeaders.Add(new SalesOrderHeader(3, 24,OrderState.Created,20, new List<SalesOrderLine>()));
-            Console.WriteLine("Ordre nummer: " + salesOrderHeaders[orderId].OrderNumber
-                                               + " Kundeid: " + salesOrderHeaders[orderId].CustomerId
-                                               + " Status: " + salesOrderHeaders[orderId].State
-                                               + " Pris: " + salesOrderHeaders[orderId].Price
+            var Order = salesOrderHeaders.Find(id => id.OrderNumber == orderId);
+            Console.WriteLine("Ordre nummer: " + Order.OrderNumber
+                                               + " Kundeid: " + Order.CustomerId
+                                               + " Status: " + Order.State
+                                               + " Pris: " + Order.Price
                                                //+ " Ordrelinje: " + salesOrderHeaders[orderId].OrderLines
                                                );
-            return orderId;
+            return Order;
         }
 
         public void GetAllSalesOrders()

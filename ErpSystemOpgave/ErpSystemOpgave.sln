@@ -5,6 +5,8 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErpSystemOpgave", "ErpSystemOpgave\ErpSystemOpgave.csproj", "{157383A9-011F-47D1-ACEB-4D3596AFC323}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestErp", "UnitTestErp\UnitTestErp.csproj", "{66112330-B7DB-4DA6-AF05-3DA2CFB63755}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{157383A9-011F-47D1-ACEB-4D3596AFC323}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{157383A9-011F-47D1-ACEB-4D3596AFC323}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{157383A9-011F-47D1-ACEB-4D3596AFC323}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66112330-B7DB-4DA6-AF05-3DA2CFB63755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66112330-B7DB-4DA6-AF05-3DA2CFB63755}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66112330-B7DB-4DA6-AF05-3DA2CFB63755}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66112330-B7DB-4DA6-AF05-3DA2CFB63755}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
