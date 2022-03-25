@@ -27,6 +27,7 @@
 |        | Produktmodul | Silas   | Mathias | Adam    | Silas   | Mathias |
 |        | Salgsmodul   | Adam    | Silas   | Mathias | Adam    | Silas   |
 
+such change
 
 # Deltagere
  - Silas Wagner
