@@ -51,4 +51,4 @@ jobs:
 
       # 5) Test a project or solution.
       - name: Test
-        run: cd ErpSystemOpgave && dotnet test --no-restore --verbosity normal
+        run: dotnet test ErpSystemOpgave/ErpSystemOpgave.sln #--no-restore --verbosity normal

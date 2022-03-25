@@ -1,6 +1,6 @@
 # Erp System
+
 [![Tests](https://github.com/AlienNotFound/erp-system-opgave/actions/workflows/build-and-tests.yaml/badge.svg?branch=feature-workflows)](https://github.com/AlienNotFound/erp-system-opgave/actions/workflows/build-and-tests.yaml)
-Repo for ERP gennemgående opgave H1
 
 
 |        |              | Mandag  | Tirsdag | Onsdag  | Torsdag | Fredag  |
