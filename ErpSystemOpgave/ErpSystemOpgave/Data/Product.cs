@@ -9,7 +9,15 @@ public enum ProductUnit
 }
 public class Product
 {
-    public Product(int productId, string name, string? description, decimal salePrice, decimal buyPrice, double inStock, string location, ProductUnit unit)
+    public Product(
+        int productId,
+        string name,
+        string? description,
+        decimal salePrice,
+        decimal buyPrice,
+        double inStock,
+        string location,
+        ProductUnit unit)
     {
         ProductId = productId;
         Name = name;
@@ -28,6 +36,6 @@ public class Product
     public Decimal BuyPrice { get; set; }
     public double InStock { get; set; }
     public String Location { get; set; } // What is this even? spec siger "*Lokation er nummer på 4 bogstaver/tal"
-    public ProductUnit Unit { get; set; } 
+    public ProductUnit Unit { get; set; }
 }
 

@@ -92,32 +92,31 @@ namespace ErpSystemOpgave
           SqlCommand cmd = new SqlCommand("SELECT * FROM tbl_productmodule", connection);
           dt = cmd.ExecuteReader();
           
-          ListPage<ProductDetails> listPage = new ListPage<ProductDetails>();
+          ListPage<Product> listPage = new ListPage<Product>();
           while (dt.Read())
           {
-              listPage.Add(new ProductDetails(
+              listPage.Add(new Product(
                   Convert.ToInt32(dt["id"]),
                   dt["productname"].ToString(),
                   dt["details"].ToString(),
-                  Convert.ToInt32(dt["stockunits"]),
+                  Convert.ToDecimal(dt["salesprice"]),
                   Convert.ToDecimal(dt["buyprice"]),
-                  Convert.ToDecimal(dt["salesprice"]),
+                  Convert.ToInt32(dt["stockunits"]),
                   dt["location"].ToString(),
-                  Convert.ToDecimal(dt["salesprice"]),
-                  dt["unit"].ToString(),
-                  Convert.ToDouble(dt["avancepercent"]),
-                  Convert.ToDouble(dt["avancekroner"])));
+                  ProductUnit.Meters
+              ));
           }
           
-          listPage.AddColumn("Varenr.", "ProductNumber");
+          listPage.AddColumn("Varenr.", "ProductId");
           listPage.AddColumn("Produktnavn", "Name");
-          listPage.AddColumn("Lagerantal", "StockUnits");
+          listPage.AddColumn("Lagerantal", "InStock");
           listPage.AddColumn("Købspris", "BuyPrice");
-          listPage.AddColumn("Salgspris", "SalesPrice");
-          listPage.AddColumn("Avance i procent", "AvancePercent");
-        
+          listPage.AddColumn("Salgspris", "SalePrice");
+          //listPage.AddColumn("Avance i procent", "AvancePercent");
+          
           //Prints the selected product name out in the console, after pressing enter. Preparation for P3 
-          Console.WriteLine("Valgte: " + listPage.Select().Name);
+          Screen.Display(new ProductDetailScreen(listPage.Select()));
+
           connection.Close();
       }
     }
