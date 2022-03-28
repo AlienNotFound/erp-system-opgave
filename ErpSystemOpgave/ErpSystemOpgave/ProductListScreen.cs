@@ -15,10 +15,5 @@ public class ProductListScreen : Screen
         DataBase db = new DataBase();
 
         db.GetAllProducts();
-        
-        /*Menu menu = new Menu();
-
-        menu.Add(new ProductDetailScreen());
-        menu.Start(this);*/
     }
 }
