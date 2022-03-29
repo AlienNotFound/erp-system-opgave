@@ -1,4 +1,5 @@
-﻿using TECHCOOL.UI;
+﻿using System;
+using TECHCOOL.UI;
 
 namespace ErpSystemOpgave;
 

@@ -1,3 +1,5 @@
+using System;
+
 namespace ErpSystemOpgave.Data;
 
 public class Address
