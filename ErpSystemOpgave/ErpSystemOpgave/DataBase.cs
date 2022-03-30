@@ -18,7 +18,7 @@ namespace ErpSystemOpgave
                                                + " Kundeid: " + Order.CustomerId
                                                + " Status: " + Order.State
                                                + " Pris: " + Order.Price
-                                               //+ " Ordrelinje: " + salesOrderHeaders[orderId].OrderLines
+                                               + " Ordrelinje: " + salesOrderHeaders[orderId].OrderLines
                                                );
             return Order;
         }
