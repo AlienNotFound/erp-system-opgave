@@ -4,6 +4,7 @@ using ErpSystemOpgave;
 using static System.Console;
 
 namespace ErpSystemOpgave;
+record MenuItem(string Description, Action Action);
 
 public static class Program
 {
@@ -22,9 +23,9 @@ public static class Program
         menu.Select().Action.Invoke();
     }
 }
-record MenuItem(string Description, Action Action);
+/*
+DataBase db = new DataBase();
 
 Customer cus1 = new Customer();
 
-DataBase db = new DataBase();
-WriteLine(db.GetAllCustomers());
+WriteLine(db.GetAllCustomers());*/

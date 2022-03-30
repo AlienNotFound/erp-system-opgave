@@ -80,35 +80,88 @@ namespace ErpSystemOpgave
             salesOrderHeaders.RemoveAll(s => s.OrderNumber == OrderNumber);
         }
 
-        public string GetCustomerFromId(int CustomerId)
+        List<Customer> customers = new List<Customer>();
+        public void CreateCustomerList()
         {
-            return null;
+            customers.Add(new Customer("Svend","Aage", new Address("Duevej", "2", "Fugleby", 0001, "Airbornia"), "12345678", "svend@aage.com", 1));
         }
-
-        public string[] GetAllCustomers()
+        public void GetCustomerFromId(int CustomerId)
         {
-            Customer customer = new Customer();
-            for (int CustomerNum = 0; CustomerNum < customer.CustomerNumber;)
+            foreach (var customer in customers)
             {
-                Console.WriteLine($"{customer.FullName} {customer.Email} {customer.Phone} {customer.Address} {customer.CustomerNumber} {customer.ContactInfo}");
+                if (customer.CustomerId == CustomerId)
+                {
+                    Console.WriteLine("Kunde id: " + customer.CustomerId 
+                                        + "\nKunde navn: " + customer.FirstName + " " + customer.LastName );
+                }
             }
-
-            return null;
         }
-
-        public void InsertCustomer()
+        public void GetAllCustomers()
         {
+            if(customers.Count == 0)
+            {
+                Console.WriteLine("Der er ingen kunder");
+            }
+            else
+            {
+                for (int i = 0; i < customers.Count; i++)
+                {
+                    Console.WriteLine("Kunde id: " + customers[i].CustomerId
+                                                   + "\nKunde navn: " + customers[i].FirstName + " " + customers[i].LastName
+                                                   + "\nAdresse: " + customers[i].Address.Street + " " + customers[i].Address.HouseNumber + " " + customers[i].Address.ZipCode + " " + customers[i].Address.City
+                                                   + "\nTelefon: " + customers[i].PhoneNumber
+                                                   + "\nEmail: " + customers[i].Email
+                    );
+                }                
+            }
+            
+        }   
 
+        public void InsertCustomer(string firstName, string lastName, string street, string houseNumber, string city, short zipCode, string country, string phoneNumber, string email)
+        {
+            int lastId = customers.Last().CustomerId;
+            customers.Add(new Customer(firstName, lastName, new Address(street, houseNumber, city, zipCode, country), phoneNumber, email, lastId+1));
+            
+            Console.WriteLine("\nTilføjede ny kunde: "
+                            + "\nKunde navn: " + firstName + " " + lastName
+                            + "\nAdresse: " + street + " " + houseNumber + " " + zipCode + " " + city
+                            + "\nTelefon: " + phoneNumber
+                            + "\nEmail: " + email
+                            );
         }
-
-        public void UpdateCustomer()
+        public void UpdateCustomer(int CustomerId, string firstName, string lastName, string street, string houseNumber, string city, short zipCode, string country, string phoneNumber, string email)
         {
-
+            var result = from c in customers
+                where c.CustomerId == CustomerId
+                select c;
+            foreach (var customer in result)
+            {
+                
+                customer.FirstName = firstName;
+                customer.LastName = lastName;
+                /*customer.Address.Street = street;
+                customer.Address.HouseNumber = houseNumber;
+                customer.Address.City = city;
+                customer.Address.ZipCode = zipCode;*/
+                customer.PhoneNumber = phoneNumber;
+                customer.Email = email;
+                
+                Console.WriteLine("\nOpdateret: ");
+                Console.WriteLine("Kunde id: " + customer.CustomerId);
+                Console.WriteLine("Fornavn: " + customer.FirstName);
+                Console.WriteLine("Efternavn: " + customer.LastName);
+                Console.WriteLine("Vej: " + customer.Address.Street);
+                Console.WriteLine("Husnummer: " + customer.Address.HouseNumber);
+                Console.WriteLine("Postnummer: " + customer.Address.ZipCode);
+                Console.WriteLine("By: " + customer.Address.City);
+                Console.WriteLine("Telefonnr.: " + customer.PhoneNumber);
+                Console.WriteLine("Email: " + customer.Email);
+            }
         }
 
         public void DeleteCustomerFromId(int CustomerId)
         {
-
+            customers.RemoveAll(c => c.CustomerId == CustomerId);
         }
     }
 }
