@@ -90,7 +90,7 @@ namespace ErpSystemOpgave
             Customer customer = new Customer();
             for (int CustomerNum = 0; CustomerNum < customer.CustomerNumber;)
             {
-                WriteLine($"{customer.FullName} {customer.Email} {customer.Phone} {customer.Address} {customer.CustomerNumber} {customer.ContactInfo}");
+                Console.WriteLine($"{customer.FullName} {customer.Email} {customer.Phone} {customer.Address} {customer.CustomerNumber} {customer.ContactInfo}");
             }
 
             return null;
