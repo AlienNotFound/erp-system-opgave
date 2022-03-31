@@ -1,5 +1,8 @@
 namespace ErpSystemOpgave.Data;
 
+// Hele den den nedestående klasse kunne implementeres med denne ene linje:
+// public record Person(string firstName, string lastName, Address address, string phoneNumber, string? email);
+
 public class Person
 {
     // ? Lav `ContactInfo` til sin egen klasse?

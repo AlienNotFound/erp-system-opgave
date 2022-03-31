@@ -1,5 +1,8 @@
 namespace ErpSystemOpgave.Data;
 
+// Hele den den nedestående klasse kunne implementeres med denne ene linje:
+// public record Address(string Street, string HouseNumber, string City, short ZipCode, string Country);
+
 public class Address
 {
     public Address(string street, string houseNumber, string city, short zipCode, string country)
