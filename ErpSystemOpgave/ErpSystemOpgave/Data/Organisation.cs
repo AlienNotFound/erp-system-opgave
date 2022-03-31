@@ -9,7 +9,7 @@ public class Organisation
         Currency = currency;
     }
 
-    public String Name { get; set; }
+    public string Name { get; set; }
     public Address Address { get; set; }
-    public String Currency { get; set; }
+    public string Currency { get; set; }
 }

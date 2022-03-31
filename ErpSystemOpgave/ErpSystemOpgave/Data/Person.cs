@@ -12,9 +12,9 @@ public class Person
         Email = email;
     }
 
-    public String FirstName { get; set; }
-    public String LastName { get; set; }
-    public String FullName => $"{FirstName} {LastName}";
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string FullName => $"{FirstName} {LastName}";
     public Address Address { get; set; }
     public String PhoneNumber { get; set; }
     public String? Email { get; set; }
