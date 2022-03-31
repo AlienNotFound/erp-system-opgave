@@ -1,0 +1,138 @@
+<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="498pt" height="389pt" viewBox="0.00 0.00 497.56 389.4">
+<g id="graph0" class="graph" transform="translate(-13.893183821054762,364.65917210701775) scale(0.8705505632961247)" data-name="">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-385.4 493.56,-385.4 493.56,4 -4,4"/>
+<!-- root -->
+<g id="node1" class="node" pointer-events="visible" data-name="root">
+
+<polygon fill="none" stroke="black" points="160.68,-381.4 42.67,-363.4 160.68,-345.4 278.7,-363.4 160.68,-381.4"/>
+<text text-anchor="middle" x="160.68" y="-359.2" font-family="Times,serif" font-size="14.00">ErpSystemOpgave</text>
+</g>
+<!-- d -->
+<g id="node2" class="node" pointer-events="visible" data-name="main" data-comment="d">
+
+<polygon fill="none" stroke="black" points="0,-272.9 0,-308.9 79.37,-308.9 79.37,-272.9 0,-272.9"/>
+<text text-anchor="middle" x="39.68" y="-286.7" font-family="Times,serif" font-size="14.00">Program.cs</text>
+</g>
+<!-- d -->
+<g id="node3" class="node" pointer-events="visible" data-name="data" data-comment="d">
+
+<polygon fill="none" stroke="black" points="151.68,-308.9 148.68,-312.9 127.68,-312.9 124.68,-308.9 97.68,-308.9 97.68,-272.9 151.68,-272.9 151.68,-308.9"/>
+<text text-anchor="middle" x="124.68" y="-286.7" font-family="Times,serif" font-size="14.00">Data</text>
+</g><g id="edge1" class="edge" data-name="root-&gt;main" data-comment="d">
+
+<path fill="none" stroke="black" d="M137.35,-348.81C120.44,-338.95 97.2,-325.41 77.63,-314.01"/>
+<polygon fill="black" stroke="black" points="79.34,-310.95 68.94,-308.94 75.81,-317 79.34,-310.95"/>
+</g>
+<!-- ui -->
+<g id="node4" class="node" pointer-events="visible" data-name="ui">
+
+<polygon fill="none" stroke="black" points="223.68,-308.9 220.68,-312.9 199.68,-312.9 196.68,-308.9 169.68,-308.9 169.68,-272.9 223.68,-272.9 223.68,-308.9"/>
+<text text-anchor="middle" x="196.68" y="-286.7" font-family="Times,serif" font-size="14.00">Ui</text>
+</g>
+<!-- s -->
+<g id="node5" class="node" pointer-events="visible" data-name="serv" data-comment="s">
+
+<polygon fill="none" stroke="black" points="359.61,-308.9 356.61,-312.9 335.61,-312.9 332.61,-308.9 295.76,-308.9 295.76,-272.9 359.61,-272.9 359.61,-308.9"/>
+<text text-anchor="middle" x="327.68" y="-286.7" font-family="Times,serif" font-size="14.00">Services</text>
+</g><g id="edge2" class="edge" data-name="root-&gt;data" data-comment="s">
+
+<path fill="none" stroke="black" d="M152.52,-346.4C148.28,-338.11 143.01,-327.78 138.19,-318.34"/>
+<polygon fill="black" stroke="black" points="141.24,-316.63 133.58,-309.32 135.01,-319.81 141.24,-316.63"/>
+</g>
+<!-- reco -->
+<!-- records -->
+<g id="node7" class="node" pointer-events="visible" data-name="records">
+
+<polygon fill="none" stroke="black" points="10.89,-136.7 10.89,-235.9 96.48,-235.9 96.48,-136.7 10.89,-136.7"/>
+<text text-anchor="middle" x="53.68" y="-219.3" font-family="Times,serif" font-size="14.00">Person.cs</text>
+<polyline fill="none" stroke="black" points="10.89,-211.1 96.48,-211.1 "/>
+<text text-anchor="middle" x="53.68" y="-194.5" font-family="Times,serif" font-size="14.00">Product.cs</text>
+<polyline fill="none" stroke="black" points="10.89,-186.3 96.48,-186.3 "/>
+<text text-anchor="middle" x="53.68" y="-169.7" font-family="Times,serif" font-size="14.00">Customer.cs</text>
+<polyline fill="none" stroke="black" points="10.89,-161.5 96.48,-161.5 "/>
+<text text-anchor="middle" x="53.68" y="-144.9" font-family="Times,serif" font-size="14.00">...</text>
+</g><g id="node6" class="node" pointer-events="visible" data-name="view" data-comment="records">
+
+<polygon fill="none" stroke="black" points="358.27,-204.3 355.27,-208.3 334.27,-208.3 331.27,-204.3 297.1,-204.3 297.1,-168.3 358.27,-168.3 358.27,-204.3"/>
+<text text-anchor="middle" x="327.68" y="-182.1" font-family="Times,serif" font-size="14.00">Facades</text>
+</g>
+<!-- s -->
+<!-- screens -->
+<!-- screens -->
+<!-- screens -->
+<!-- screens -->
+<!-- screens -->
+
+<g id="node8" class="node" pointer-events="visible" data-name="screens">
+
+<polygon fill="none" stroke="black" points="114.63,-136.7 114.63,-235.9 278.74,-235.9 278.74,-136.7 114.63,-136.7"/>
+<text text-anchor="middle" x="196.68" y="-219.3" font-family="Times,serif" font-size="14.00">ListProductsScreen.cs</text>
+<polyline fill="none" stroke="black" points="114.63,-211.1 278.74,-211.1 "/>
+<text text-anchor="middle" x="196.68" y="-194.5" font-family="Times,serif" font-size="14.00">UpdateCustomerScreen.cs</text>
+<polyline fill="none" stroke="black" points="114.63,-186.3 278.74,-186.3 "/>
+<text text-anchor="middle" x="196.68" y="-169.7" font-family="Times,serif" font-size="14.00">OrderDetailsSreen.cs</text>
+<polyline fill="none" stroke="black" points="114.63,-161.5 278.74,-161.5 "/>
+<text text-anchor="middle" x="196.68" y="-144.9" font-family="Times,serif" font-size="14.00">...</text>
+</g><g id="edge3" class="edge" data-name="root-&gt;ui" data-comment="screens">
+
+<path fill="none" stroke="black" d="M168.85,-346.4C173.09,-338.11 178.36,-327.78 183.18,-318.34"/>
+<polygon fill="black" stroke="black" points="186.36,-319.81 187.79,-309.32 180.13,-316.63 186.36,-319.81"/>
+</g>
+<!-- fa -->
+<!-- facades -->
+<g id="node10" class="node" pointer-events="visible" data-name="Database.cs" data-comment="facades">
+
+<ellipse fill="none" stroke="black" cx="432.68" cy="-186.3" rx="56.76" ry="18"/>
+<text text-anchor="middle" x="432.68" y="-182.1" font-family="Times,serif" font-size="14.00">Database.cs</text>
+</g>
+<g id="edge5" class="edge" data-name="serv-&gt;Database.cs" data-comment="facades">
+
+<path fill="none" stroke="black" d="M345.5,-272.5C362.85,-255.54 389.36,-229.63 408.59,-210.84"/>
+<polygon fill="black" stroke="black" points="411.12,-213.26 415.83,-203.77 406.23,-208.26 411.12,-213.26"/>
+</g><g id="edge6" class="edge" data-name="serv-&gt;view" data-comment="facades">
+
+<path fill="none" stroke="black" d="M327.68,-272.5C327.68,-256.63 327.68,-232.93 327.68,-214.55"/>
+<polygon fill="black" stroke="black" points="331.18,-214.45 327.68,-204.45 324.18,-214.45 331.18,-214.45"/>
+</g><g id="edge8" class="edge" data-name="data-&gt;records" data-comment="facades">
+
+<path fill="none" stroke="black" d="M112.64,-272.5C107.15,-264.56 100.29,-254.65 93.23,-244.44"/>
+<polygon fill="black" stroke="black" points="96.1,-242.45 87.53,-236.21 90.35,-246.43 96.1,-242.45"/>
+</g>
+<g id="edge9" class="edge" data-name="ui-&gt;screens" data-comment="facades">
+
+<path fill="none" stroke="black" d="M196.68,-272.5C196.68,-265.03 196.68,-255.82 196.68,-246.26"/>
+<polygon fill="black" stroke="black" points="200.18,-246.21 196.68,-236.21 193.18,-246.21 200.18,-246.21"/>
+</g>
+
+<!-- facades -->
+
+
+<g id="node9" class="node" pointer-events="visible" data-name="facades">
+
+<polygon fill="none" stroke="black" points="265.07,-0.5 265.07,-99.7 390.3,-99.7 390.3,-0.5 265.07,-0.5"/>
+<text text-anchor="middle" x="327.68" y="-83.1" font-family="Times,serif" font-size="14.00">ProductsFacade.cs</text>
+<polyline fill="none" stroke="black" points="265.07,-74.9 390.3,-74.9 "/>
+<text text-anchor="middle" x="327.68" y="-58.3" font-family="Times,serif" font-size="14.00">CustomerFacade.cs</text>
+<polyline fill="none" stroke="black" points="265.07,-50.1 390.3,-50.1 "/>
+<text text-anchor="middle" x="327.68" y="-33.5" font-family="Times,serif" font-size="14.00">SalesFacade.cs</text>
+<polyline fill="none" stroke="black" points="265.07,-25.3 390.3,-25.3 "/>
+<text text-anchor="middle" x="327.68" y="-8.7" font-family="Times,serif" font-size="14.00">...</text>
+</g>
+<g id="edge4" class="edge" data-name="root-&gt;serv" data-comment="facades">
+
+<path fill="none" stroke="black" d="M190.54,-349.8C217.29,-338.5 256.78,-321.83 286.53,-309.28"/>
+<polygon fill="black" stroke="black" points="287.96,-312.47 295.81,-305.36 285.24,-306.02 287.96,-312.47"/>
+</g>
+<!-- u -->
+
+<!-- facades -->
+<g id="edge7" class="edge" data-name="view-&gt;facades" data-comment="facades">
+
+<path fill="none" stroke="black" d="M327.68,-168.03C327.68,-153.25 327.68,-131.07 327.68,-109.99"/>
+<polygon fill="black" stroke="black" points="331.18,-109.77 327.68,-99.77 324.18,-109.77 331.18,-109.77"/>
+</g>
+<!-- u -->
+
+</g>
+</svg>

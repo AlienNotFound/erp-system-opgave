@@ -1,0 +1,26 @@
+digraph{
+    root [label = "ErpSystemOpgave", shape="diamond"]
+    main [label = "Program.cs", shape="record"]
+    data [label = "Data", shape="folder"]
+    ui   [label = "Ui", shape="folder"]
+    serv [label = "Services", shape="folder"]
+    
+    view [label = "Facades", shape="folder"]
+
+    records [label="{Person.cs | Product.cs | Customer.cs | ... }", shape="record"]
+    screens [label="{ListProductsScreen.cs | UpdateCustomerScreen.cs | OrderDetailsSreen.cs | ... }", shape="record"]
+    facades [label="{ProductsFacade.cs | CustomerFacade.cs | SalesFacade.cs | ... }", shape="record"]
+
+    root -> main
+    root -> data
+    root -> ui
+    root -> serv
+
+    serv -> "Database.cs"
+    serv -> view
+    view -> facades
+
+    data -> records
+    ui -> screens
+
+}
