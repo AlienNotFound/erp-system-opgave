@@ -1,26 +1,25 @@
 digraph{
-    root [label = "ErpSystemOpgave", shape="diamond"]
-    main [label = "Program.cs", shape="record"]
+    root [label = "ErpSystemOpgave", shape="box"]
+    testproject [label = "UnitTestErp", shape="diamond"]
+
+    tests [label="{DatabaseTests.cs | DataModelTests.cs | ...}", shape="record"]
+    root -> testproject -> tests
+
+
+    root -> project -> "Program.cs"
+    project [label = "ErpSystemOpgave", shape="diamond"]
     data [label = "Data", shape="folder"]
     ui   [label = "Ui", shape="folder"]
     serv [label = "Services", shape="folder"]
     
-    view [label = "Facades", shape="folder"]
-
     records [label="{Person.cs | Product.cs | Customer.cs | ... }", shape="record"]
     screens [label="{ListProductsScreen.cs | UpdateCustomerScreen.cs | OrderDetailsSreen.cs | ... }", shape="record"]
     facades [label="{ProductsFacade.cs | CustomerFacade.cs | SalesFacade.cs | ... }", shape="record"]
 
-    root -> main
-    root -> data
-    root -> ui
-    root -> serv
+    project -> data -> records
+    project -> ui -> screens
+    project -> serv -> facades
 
     serv -> "Database.cs"
-    serv -> view
-    view -> facades
-
-    data -> records
-    ui -> screens
 
 }
