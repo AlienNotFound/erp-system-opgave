@@ -1,5 +1,6 @@
-# erp-system-opgave
-Repo for ERP gennemgående opgave H1
+# Erp System
+
+[![Tests](https://github.com/AlienNotFound/erp-system-opgave/actions/workflows/build-and-tests.yaml/badge.svg?branch=feature-workflows)](https://github.com/AlienNotFound/erp-system-opgave/actions/workflows/build-and-tests.yaml)
 
 
 |        |              | Mandag  | Tirsdag | Onsdag  | Torsdag | Fredag  |
@@ -26,6 +27,7 @@ Repo for ERP gennemgående opgave H1
 |        | Produktmodul | Silas   | Mathias | Adam    | Silas   | Mathias |
 |        | Salgsmodul   | Adam    | Silas   | Mathias | Adam    | Silas   |
 
+such change
 
 # Deltagere
  - Silas Wagner
