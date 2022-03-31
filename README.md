@@ -1,6 +1,6 @@
 # Erp System
 
-[![Tests](https://github.com/AlienNotFound/erp-system-opgave/actions/workflows/build-and-tests.yaml/badge.svg?branch=feature-workflows)](https://github.com/AlienNotFound/erp-system-opgave/actions/workflows/build-and-tests.yaml)
+[![Tests](https://github.com/AlienNotFound/erp-system-opgave/actions/workflows/build-and-tests.yaml/badge.svg?branch=main)](https://github.com/AlienNotFound/erp-system-opgave/actions/workflows/build-and-tests.yaml)
 
 
 |        |              | Mandag  | Tirsdag | Onsdag  | Torsdag | Fredag  |
@@ -26,6 +26,8 @@
 | Uge 18 | Kundemodul   | Mathias | Adam    | Silas   | Mathias | Adam    |
 |        | Produktmodul | Silas   | Mathias | Adam    | Silas   | Mathias |
 |        | Salgsmodul   | Adam    | Silas   | Mathias | Adam    | Silas   |
+
+[![Project structure](structure.svg)](structure.dot)
 
 such change
 
