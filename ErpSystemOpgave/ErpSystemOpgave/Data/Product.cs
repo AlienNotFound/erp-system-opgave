@@ -1,4 +1,6 @@
-﻿namespace ErpSystemOpgave.Data;
+﻿using System;
+
+namespace ErpSystemOpgave.Data;
 
 public enum ProductUnit
 {

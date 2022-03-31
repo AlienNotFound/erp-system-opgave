@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace ErpSystemOpgave.Data;
 
-
 public enum OrderState
 {
     None,

@@ -1,4 +1,4 @@
-﻿namespace ErpSystemOpgave.Data;
+namespace ErpSystemOpgave.Data;
 
 public class SalesOrderLine
 {
