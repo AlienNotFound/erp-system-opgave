@@ -139,10 +139,10 @@ namespace ErpSystemOpgave
                 
                 customer.FirstName = firstName;
                 customer.LastName = lastName;
-                /*customer.Address.Street = street;
+                customer.Address.Street = street;
                 customer.Address.HouseNumber = houseNumber;
                 customer.Address.City = city;
-                customer.Address.ZipCode = zipCode;*/
+                customer.Address.ZipCode = zipCode;
                 customer.PhoneNumber = phoneNumber;
                 customer.Email = email;
                 

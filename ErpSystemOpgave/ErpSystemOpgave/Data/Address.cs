@@ -13,9 +13,9 @@ public class Address
         Country = country;
     }
 
-    public String Street { get; private set; }
-    public String HouseNumber { get; private set; } //? Et husnummer kunne fx være "2B" eller "2.S t.v". Af den grund String.
-    public String City { get; private set; }
-    public short ZipCode { get; private set; }
-    public String Country { get; private set; }
+    public String Street { get; set; }
+    public String HouseNumber { get;  set; } //? Et husnummer kunne fx være "2B" eller "2.S t.v". Af den grund String.
+    public String City { get; set; }
+    public short ZipCode { get; set; }
+    public String Country { get; set; }
 }

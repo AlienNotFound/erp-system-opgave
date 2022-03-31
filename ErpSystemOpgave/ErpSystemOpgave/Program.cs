@@ -23,7 +23,7 @@ public static class Program
         menu.Select().Action.Invoke();
     }
 }
-/*
+/* Har bare haft stået for sig selv da jeg mergede? where dis go
 DataBase db = new DataBase();
 
 Customer cus1 = new Customer();
