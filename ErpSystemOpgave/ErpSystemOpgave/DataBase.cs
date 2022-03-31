@@ -1,44 +1,64 @@
-﻿using System;
-using static System.Console;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ErpSystemOpgave.Data;
 
-namespace ErpSystemOpgave
-{
-    internal class DataBase
-    {
 
-        public string GetCustomerFromId(int CustomerId)
-        {
-            return null;
+namespace ErpSystemOpgave {
+    internal class DataBase {
+        private List<Customer> _customers;
+
+        public DataBase() {
+            _customers = new List<Customer>();
+            _nextCustomerId = 1;
         }
 
-        public string[] GetAllCustomers()
-        {
-            Customer customer = new Customer();
-            for (int CustomerNum = 0; CustomerNum < customer.CustomerNumber;)
-            {
-                WriteLine($"{customer.FullName} {customer.Email} {customer.Phone} {customer.Address} {customer.CustomerNumber} {customer.ContactInfo}");
-            }
+        //HACK: Dette er blot for at simulere en IDENTITY på Customer mens vi ikke har en database
+        private int _nextCustomerId;
+        private int NextCustomerId => _nextCustomerId++;
 
-            return null;
+        ////////////////////////////////////////////////////////////////////////////
+        /////////////         Customer        //////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+        public Customer? GetCustomerFromId(int customerId)
+            => _customers.FirstOrDefault(c => c.CustomerId == customerId);
+        
+        // Hvis vi blot returnerede en reference til _customers, ville consumeren kunne ændre i listen.
+        // Med GetRange() returnerer vi en kopi af indholdet i stedet.
+        public IEnumerable<Customer> GetAllCustomers()
+            => _customers.GetRange(0, _customers.Count); 
+
+        public void InsertCustomer(
+            string firstName,
+            string lastName,
+            Address address,
+            ContactInfo contactInfo)
+        {
+            _customers.Add(new Customer(
+                firstName,
+                lastName,
+                address,
+                contactInfo,
+                NextCustomerId
+                ));
         }
 
-        public void InsertCustomer()
-        {
-
+        public void UpdateCustomer(int customerId, Customer updatedCustomer) {
+            if (_customers.FindIndex(c => c.CustomerId == customerId) is var index && index != -1)
+                _customers[index] = updatedCustomer;
         }
 
-        public void UpdateCustomer()
-        {
-
+        public void DeleteCustomerFromId(int customerId) {
+            _customers.RemoveAll(c => c.CustomerId == customerId);
         }
 
-        public void DeleteCustomerFromId(int CustomerId)
-        {
 
-        }
+        ////////////////////////////////////////////////////////////////////////////
+        /////////////         Products        //////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
+
+
+        ////////////////////////////////////////////////////////////////////////////
+        /////////////         Orders          //////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////
     }
 }
