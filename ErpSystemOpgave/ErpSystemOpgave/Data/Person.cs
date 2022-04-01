@@ -1,21 +1,22 @@
 namespace ErpSystemOpgave.Data;
 
+// Hele den den nedestående klasse kunne implementeres med denne ene linje:
+// public record Person(string firstName, string lastName, Address address, string phoneNumber, string? email);
+
 public class Person
 {
     // ? Lav `ContactInfo` til sin egen klasse?
-    public Person(string firstName, string lastName, Address address, string phoneNumber, string? email)
+    public Person(string firstName, string lastName, Address address, ContactInfo contactInfo)
     {
         FirstName = firstName;
         LastName = lastName;
         Address = address;
-        PhoneNumber = phoneNumber;
-        Email = email;
+        ContactInfo = contactInfo;
     }
 
-    public String FirstName { get; set; }
-    public String LastName { get; set; }
-    public String FullName => $"{FirstName} {LastName}";
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string FullName => $"{FirstName} {LastName}";
     public Address Address { get; set; }
-    public String PhoneNumber { get; set; }
-    public String? Email { get; set; }
+    public ContactInfo ContactInfo { get; set; }
 }
