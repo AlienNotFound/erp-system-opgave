@@ -6,19 +6,38 @@ namespace ErpSystemOpgave.Data;
 public class SalesOrderHearderScreen : Screen
 {
     public override string Title { get; set; } = "Salgsordrehoved";
+
     protected override void Draw()
     {
         DataBase db = new DataBase();
         List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-        salesOrderHeaders.Add(new SalesOrderHeader(3, 24,OrderState.Created,22, new List<SalesOrderLine>()));
-        salesOrderHeaders.Add(new SalesOrderHeader(2, 35,OrderState.Created,20, new List<SalesOrderLine>()));
-        salesOrderHeaders.Add(new SalesOrderHeader(5, 89,OrderState.Created,30, new List<SalesOrderLine>()));
+        List<Customer> customers = new List<Customer>();
         
-        List<Customer> customerHeader = new List<Customer>(); //Til når vi har en liste af kunder, som så kan strikkes sammen med salgsordrehovederne
-
+        db.InsertCustomer(
+            "Bob",
+            "Bobsen",
+            new Address("Vejgade Alle", "28B", "Herrens Mark", 1234, "Lalaland"),
+            new ContactInfo("88888888", "test@mail.com")
+        );
+        db.InsertCustomer(
+            "Søren",
+            "Sørensen",
+            new Address("Østre-nøresøndergade", "2. sal t.v", "Beyond Herrens Mark", 1234, "Lalaland"),
+            new ContactInfo("12341234", "test2@mail.com")
+        );
+        
+        db.CreateSalesOrder(2,1,200);
+        db.CreateSalesOrder(3,0,200);
+        
         Clear(this);
+        ListPage<Customer> customerListPage = new ListPage<Customer>();
+        foreach (var customer in db.GetAllCustomers())
+        {
+            customerListPage.Add(customer);
+        }
+
         ListPage<SalesOrderHeader> listPage = new ListPage<SalesOrderHeader>();
-        foreach (var salesOrder in salesOrderHeaders)
+        foreach (var salesOrder in db.GetAllSalesOrders())
         {
             listPage.Add(salesOrder);
         }
@@ -26,8 +45,10 @@ public class SalesOrderHearderScreen : Screen
         listPage.AddColumn("Ordrenummer", "OrderNumber");
         listPage.AddColumn("Dato", "CreationTime", 25);
         listPage.AddColumn("Kunde id", "CustomerId");
-        //listPage.AddColumn("Kunde navn", "CustomerName");
+        customerListPage.AddColumn("Kunde id", "CustomerId");
+        customerListPage.AddColumn("Kunde navn", "FullName");
         listPage.AddColumn("Pris", "Price");
         listPage.Draw();
+        customerListPage.Draw();
     }
 }

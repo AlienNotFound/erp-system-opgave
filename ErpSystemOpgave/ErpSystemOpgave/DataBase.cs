@@ -10,7 +10,7 @@ namespace ErpSystemOpgave
     public class DataBase
     {
         private List<Customer> customers = new();
-        public List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
+        public List<SalesOrderHeader> salesOrderHeaders = new();
         
         //HACK: Dette er blot for at simulere en IDENTITY på Customer mens vi ikke har en database
         private int _nextCustomerId;
@@ -50,6 +50,7 @@ namespace ErpSystemOpgave
         public void DeleteCustomerFromId(int customerId) {
             customers.RemoveAll(c => c.CustomerId == customerId);
         }
+        
         ////////////////////////////////////////////////////////////////////////////
         /////////////         Products        //////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////
@@ -70,13 +71,11 @@ namespace ErpSystemOpgave
             );
             return Order;
         }
-        
-        public void GetAllSalesOrders()
+        public IEnumerable<SalesOrderHeader> GetAllSalesOrders()
+            => salesOrderHeaders.GetRange(0, salesOrderHeaders.Count);
+        /*public void GetAllSalesOrders()
         {
             List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-            salesOrderHeaders.Add(new SalesOrderHeader(3, 24,OrderState.Created,22, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(2, 35,OrderState.Created,20, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(5, 89,OrderState.Created,30, new List<SalesOrderLine>()));
 
             for (int i = 0; i < salesOrderHeaders.Count; i++)
             {
@@ -87,11 +86,10 @@ namespace ErpSystemOpgave
                                                    + " Oprettet: " + salesOrderHeaders[i].CreationTime
                 );
             }
-        }
+        }*/
 
         public void CreateSalesOrder(int OrderNumber, int CustomerId, decimal Price)
         {
-            List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
             salesOrderHeaders.Add(new SalesOrderHeader(OrderNumber, CustomerId, OrderState.Created, Price, new List<SalesOrderLine>()));
         }
 

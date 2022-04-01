@@ -9,6 +9,8 @@ public class Program
         SalesOrderHearderScreen salesOrderHearderScreen = new SalesOrderHearderScreen();
         Screen.Display(salesOrderHearderScreen);
         
+        
+        
         /*var db = new DataBase();
         db.InsertCustomer(
             "Bob", 
@@ -24,7 +26,7 @@ public class Program
         );
         
         foreach (var customer in db.GetAllCustomers()) {
-            WriteLine(customer);
+            Console.WriteLine(customer.FirstName + " " + customer.LastName);
         }*/
     }
 }
