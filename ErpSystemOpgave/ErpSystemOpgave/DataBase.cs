@@ -39,7 +39,7 @@ public class DataBase {
             NextCustomerId
         ));
     }
-
+    
     public void UpdateCustomer(int customerId, Customer updatedCustomer) {
         if (customers.FindIndex(c => c.CustomerId == customerId) is var index && index != -1)
             customers[index] = updatedCustomer;

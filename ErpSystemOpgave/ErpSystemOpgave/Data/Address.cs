@@ -16,7 +16,7 @@ public class Address
 
     public string Street { get; private set; }
     public string HouseNumber { get; private set; } //? Et husnummer kunne fx være "2B" eller "2.S t.v". Af den grund String.
-    public string City { get; private set; }
+    public string City { get; set; }
     public short ZipCode { get; private set; }
     public string Country { get; private set; }
 }

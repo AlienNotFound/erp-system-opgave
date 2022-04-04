@@ -1,10 +1,15 @@
-﻿namespace ErpSystemOpgave;
+﻿using TECHCOOL.UI;
+
+namespace ErpSystemOpgave;
 using Data;
 using static System.Console;
 
 
 class Program {
     public static void Main(string[] args) {
+        CustomerListScreen customerListScreen = new CustomerListScreen();
+        Screen.Display(customerListScreen);
+        
         var db = new DataBase();
         db.InsertCustomer(
             "Bob", 
@@ -19,9 +24,9 @@ class Program {
             new ContactInfo("12341234", "test2@mail.com") 
             );
         
-        foreach (var customer in db.GetAllCustomers()) {
+        /*foreach (var customer in db.GetAllCustomers()) {
             WriteLine(customer);
-        }
+        }*/
         
     }
 }
