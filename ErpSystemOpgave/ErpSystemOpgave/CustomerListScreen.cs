@@ -38,7 +38,8 @@ public class CustomerListScreen : Screen
         listPage.AddColumn("Telefon", "PhoneNumber");
         listPage.AddColumn("Email", "Email");
         Customer selected = listPage.Select();
-        SelectedId = selected.CustomerId;
+        SelectedId = selected.CustomerId; // Tager den valgte kunde og gemmer den i SelectedId, til CustomerDetailsScreen
+                                          // Lige pt. opdatere den kun anden gang, man går ind på skærmen
 
         if (selected != null)
         {
