@@ -1,3 +1,5 @@
+using System;
+
 namespace ErpSystemOpgave.Data;
 
 public class Person
@@ -11,7 +13,6 @@ public class Person
         PhoneNumber = phoneNumber;
         Email = email;
     }
-
     public String FirstName { get; set; }
     public String LastName { get; set; }
     public String FullName => $"{FirstName} {LastName}";
