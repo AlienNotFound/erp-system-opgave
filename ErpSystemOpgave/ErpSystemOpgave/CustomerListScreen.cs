@@ -11,7 +11,6 @@ public class CustomerListScreen : Screen
     protected override void Draw()
     {
         DataBase db = new DataBase();
-        CustomerDetailsScreen customerDetailsScreen = new CustomerDetailsScreen();
 
         db.InsertCustomer(
             "Bob",
@@ -38,8 +37,9 @@ public class CustomerListScreen : Screen
         listPage.AddColumn("Telefon", "PhoneNumber");
         listPage.AddColumn("Email", "Email");
         Customer selected = listPage.Select();
-        SelectedId = selected.CustomerId; // Tager den valgte kunde og gemmer den i SelectedId, til CustomerDetailsScreen
-                                          // Lige pt. opdatere den kun anden gang, man går ind på skærmen
+        SelectedId = selected.CustomerId; 
+        
+        CustomerDetailsScreen customerDetailsScreen = new CustomerDetailsScreen();
 
         if (selected != null)
         {
