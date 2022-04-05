@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ErpSystemOpgave
 {
-    public class Emplpoyee : Person
+    public class Emplpoyee
     {
         public int EmplId
         {
