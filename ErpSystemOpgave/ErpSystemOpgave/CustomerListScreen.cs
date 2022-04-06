@@ -1,5 +1,5 @@
-﻿using TECHCOOL.UI;
-using ErpSystemOpgave.Data;
+﻿using ErpSystemOpgave.Data;
+using TECHCOOL.UI;
 
 namespace ErpSystemOpgave;
 
@@ -10,21 +10,7 @@ public class CustomerListScreen : Screen
 
     protected override void Draw()
     {
-        DataBase db = new DataBase();
-
-        db.InsertCustomer(
-            "Bob",
-            "Bobsen",
-            new Address("Vejgade Alle", "28B", "Herrens Mark", 1234, "Lalaland"),
-            new ContactInfo("88888888", "test@mail.com")
-        );
-        db.InsertCustomer(
-            "Søren",
-            "Sørensen",
-            new Address("Østre-nøresøndergade", "2. sal t.v", "Beyond Herrens Mark", 1234, "Lalaland"),
-            new ContactInfo("12341234", "test2@mail.com")
-        );
-
+        DataBase db = DataBase.Instance;
         Clear(this);
         ListPage<Customer> listPage = new ListPage<Customer>();
         foreach (var customer in db.GetAllCustomers())
@@ -37,8 +23,8 @@ public class CustomerListScreen : Screen
         listPage.AddColumn("Telefon", "PhoneNumber");
         listPage.AddColumn("Email", "Email");
         Customer selected = listPage.Select();
-        SelectedId = selected.CustomerId; 
-        
+        SelectedId = selected.CustomerId;
+
         CustomerDetailsScreen customerDetailsScreen = new CustomerDetailsScreen();
 
         if (selected != null)
