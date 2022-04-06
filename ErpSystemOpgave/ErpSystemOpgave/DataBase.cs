@@ -14,7 +14,7 @@ namespace ErpSystemOpgave
     {
         List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
         List<SalesOrderLine> salesOrderLines = new List<SalesOrderLine>();
-
+        
         public void GetAllProducts()
         {
               string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
@@ -49,9 +49,8 @@ namespace ErpSystemOpgave
               listPage.AddColumn("Salgspris", "SalesPrice");
               listPage.AddColumn("Avance i procent", "AvancePercent");
               listPage.AddColumn("Avance i kroner", "AvanceKroner");
-            
-              //Prints the selected product name out in the console, after pressing enter. Preparation for P3 
-              Console.WriteLine("Valgte: " + listPage.Select().Name);
+              listPage.Select();
+              
               connection.Close();
         }
         public void GetProductById(int ProductID)

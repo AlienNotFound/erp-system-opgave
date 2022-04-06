@@ -9,8 +9,7 @@ namespace ErpSystemOpgave;
 public class ProductDetailScreen : Screen
 {
     public override string Title { get; set; } = "Produkt detaljer";
-    //Screen for P3
-
+    
     private readonly Product _product;
     public ProductDetailScreen(Product product)
     {

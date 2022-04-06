@@ -31,7 +31,6 @@ public class ProductUpdateScreen : Screen
         string salePrice = Console.ReadLine();
         
         UpdateProduct(_product.ProductId, productName, details, decimal.TryParse(salePrice, out decimal salePriceDecimal) ? salePriceDecimal : _product.SalePrice);
-        //throw new NotImplementedException();
     }
     
     public void UpdateProduct(int Id, string ProductName, string Details, decimal SalePrice)

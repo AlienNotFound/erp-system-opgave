@@ -8,8 +8,8 @@ public class Program
 {
     public static void Main(string[] args)
     {
-        /*ProductListScreen productListScreen = new ProductListScreen();
-        Screen.Display(productListScreen);*/
+        ProductListScreen productListScreen = new ProductListScreen();
+        Screen.Display(productListScreen);
         
         // ProductDetailScreen detailScreen = new(
         //     new Product(
