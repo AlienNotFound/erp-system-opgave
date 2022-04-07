@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -60,6 +61,23 @@ namespace ErpSystemOpgave
         ////////////////////////////////////////////////////////////////////////////
         /////////////         Orders          //////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////
+        public void CreateSaleOrderList()
+        {
+            string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+            SqlConnection connection = new SqlConnection(connectionString);
+            connection.Open();
+
+            SqlDataReader dt;
+            SqlCommand cmd = new SqlCommand("SELECT * FROM SaleOrders", connection);
+            dt = cmd.ExecuteReader();
+
+            foreach (var sale in dt)
+            {
+
+            }
+            
+            connection.Close();
+        }
         public SalesOrderHeader GetSalesOrderById(int orderId)
         {
             var Order = salesOrderHeaders.Find(id => id.OrderNumber == orderId);
