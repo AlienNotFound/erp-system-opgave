@@ -32,12 +32,17 @@ public class Product
     }
 
     public int ProductId { get; set; }
-    public String Name { get; set; }
-    public String? Description { get; set; }
-    public Decimal SalePrice { get; set; }
-    public Decimal BuyPrice { get; set; }
+    public string Name { get; set; }
+    public string? Description { get; set; }
+    public decimal SalePrice { get; set; }
+    public decimal BuyPrice { get; set; }
     public double InStock { get; set; }
+<<<<<<< HEAD
     public String Location { get; set; } // What is this even? spec siger "*Lokation er nummer på 4 bogstaver/tal"
     public ProductUnit Unit { get; set; }
+=======
+    public string Location { get; set; } // What is this even? spec siger "*Lokation er nummer på 4 bogstaver/tal"
+    public ProductUnit Unit { get; set; } 
+>>>>>>> origin/main
 }
 

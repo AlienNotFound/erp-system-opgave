@@ -1,37 +1,67 @@
-using ErpSystemOpgave;
-using ErpSystemOpgave.Data;
 using TECHCOOL.UI;
-using System;
 
 namespace ErpSystemOpgave;
-public class Program
+using Data;
+using static System.Console;
+
+
+class Program
 {
     public static void Main(string[] args)
     {
-        ProductListScreen productListScreen = new ProductListScreen();
-        Screen.Display(productListScreen);
-        
-        // ProductDetailScreen detailScreen = new(
-        //     new Product(
-        //         42069,
-        //         "Half a unicorn",
-        //         "Unicorn is length 0.5???",
-        //         (decimal)80085.0,
-        //         (decimal)8008135.0,
-        //         10.0,
-        //         "n008",
-        //         ProductUnit.Quantity));
-        // Screen.Display(detailScreen);
+
+        var db = DataBase.Instance;
+        db.InsertCustomer(
+            "Bob",
+            "Bobsen",
+            new Address("Vejgade Alle", "28B", "Herrens Mark", 1234, "Lalaland"),
+            new ContactInfo("88888888", "test@mail.com")
+            );
+        db.InsertCustomer(
+            "Søren",
+            "Sørensen",
+            new Address("Østre-nøresøndergade", "2. sal t.v", "Beyond Herrens Mark", 1234, "Lalaland"),
+            new ContactInfo("12341234", "test2@mail.com")
+            );
+        CustomerListScreen customerListScreen = new CustomerListScreen();
+        Screen.Display(customerListScreen);
+
+        /*foreach (var customer in db.GetAllCustomers()) {
+            WriteLine(customer);
+        }*/
+
     }
+
     public static void ShowMenu(params (String Description, Action Action)[] items)
     {
-        var menu = new ListPage<MenuItem>();
+        ListPage<MenuItem> menu = new();
         menu.AddColumn("Action:", "Description");
-        foreach (var (desc, action) in items)
-        {
-            menu.Add(new MenuItem(desc, action));
-        }
+        menu.Add(items.Select(i => new MenuItem(i.Description, i.Action)));
         menu.Select().Action.Invoke();
     }
+    public static ListPage<T> CreateListPageWith<T>(IEnumerable<T> collection, params (string title, string property)[] items)
+    {
+        ListPage<T> listPage = new();
+        listPage.Add(collection);
+        foreach (var (title, property) in items)
+        {
+            listPage.AddColumnAligned(title, property, collection);
+        }
+        return listPage;
+    }
 }
+<<<<<<< HEAD
+=======
+
+
+static class ListPageExtensions
+{
+    public static void AddColumnAligned<T>(this ListPage<T> listPage, string title, string property, IEnumerable<T> collection)
+    {
+        listPage.AddColumn(title, property, Math.Max(collection.Max(item =>
+        String.Format("{0}", typeof(T).GetProperty(property)!.GetValue(item)).Length), title.Length) + 4);
+    }
+};
+
+>>>>>>> origin/main
 record MenuItem(string Description, Action Action);
