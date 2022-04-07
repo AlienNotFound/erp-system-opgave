@@ -10,26 +10,14 @@ public class CustomerListScreen : Screen
 
     protected override void Draw()
     {
-        DataBase db = DataBase.Instance;
         Clear(this);
-        ListPage<Customer> listPage = new ListPage<Customer>();
-        foreach (var customer in db.GetAllCustomers())
-        {
-            listPage.Add(customer);
-        }
+        var listPage = Program.CreateListPageWith(
+            DataBase.Instance.GetAllCustomers(),
+            ("Kundenummer", "CustomerId"),
+            ("Navn", "FullName"),
+            ("Contact", "ContactInfo"));
 
-        listPage.AddColumn("Kundenummer", "CustomerId");
-        listPage.AddColumn("Navn", "FullName");
-        listPage.AddColumn("Telefon", "PhoneNumber");
-        listPage.AddColumn("Email", "Email");
-        Customer selected = listPage.Select();
-        SelectedId = selected.CustomerId;
-
-        CustomerDetailsScreen customerDetailsScreen = new CustomerDetailsScreen();
-
-        if (selected != null)
-        {
-            Screen.Display(customerDetailsScreen);
-        }
+        if (listPage.Select() is Customer selected)
+            Screen.Display(new CustomerDetailsScreen(selected.CustomerId));
     }
 }

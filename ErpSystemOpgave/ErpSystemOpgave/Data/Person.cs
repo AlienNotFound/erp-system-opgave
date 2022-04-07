@@ -1,7 +1,25 @@
 namespace ErpSystemOpgave.Data;
 
 // Hele den den nedestående klasse kunne implementeres med denne ene linje:
-// public record Person(string firstName, string lastName, Address address, string phoneNumber, string? email);
+// public record Person
+// {
+//     public string FirstName { get; set; }
+//     public string LastName { get; set; }
+//     public Address Address { get; set; }
+//     public ContactInfo ContactInfo { get; set; }
+
+//     public string FullName => $"{FirstName} {LastName}";
+
+//     public Person(string firstName, string lastName, Address address, ContactInfo contactInfo)
+//     {
+//         FirstName = firstName;
+//         LastName = lastName;
+//         Address = address;
+//         ContactInfo = contactInfo;
+//     }
+
+
+// }
 
 public class Person
 {
@@ -16,7 +34,8 @@ public class Person
 
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public string FullName => $"{FirstName} {LastName}";
     public Address Address { get; set; }
     public ContactInfo ContactInfo { get; set; }
+    public string FullAddress => Address.ToString();
+    public string FullName => $"{FirstName} {LastName}";
 }
