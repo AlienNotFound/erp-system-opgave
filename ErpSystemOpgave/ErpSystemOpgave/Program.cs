@@ -50,8 +50,6 @@ class Program
         return listPage;
     }
 }
-<<<<<<< HEAD
-=======
 
 
 static class ListPageExtensions
@@ -63,5 +61,4 @@ static class ListPageExtensions
     }
 };
 
->>>>>>> origin/main
 record MenuItem(string Description, Action Action);
