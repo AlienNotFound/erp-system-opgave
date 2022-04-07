@@ -1,6 +1,3 @@
-﻿using System;
-using System.Security.AccessControl;
-
 namespace ErpSystemOpgave.Data;
 
 public class SalesOrderLine
@@ -20,8 +17,8 @@ public class SalesOrderLine
 
     public decimal TotalPrice => Price *  Amount;
     public decimal Price { get; set; }
-    public String ProductName { get; set; }
-    public String? ProductDescription { get; set; }
+    public string ProductName { get; set; }
+    public string? ProductDescription { get; set; }
     public ProductUnit Unit { get; set; }
     public decimal Amount { get; set; } 
 }
