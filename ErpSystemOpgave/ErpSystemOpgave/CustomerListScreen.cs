@@ -1,5 +1,5 @@
-﻿using TECHCOOL.UI;
-using ErpSystemOpgave.Data;
+﻿using ErpSystemOpgave.Data;
+using TECHCOOL.UI;
 
 namespace ErpSystemOpgave;
 
@@ -10,40 +10,14 @@ public class CustomerListScreen : Screen
 
     protected override void Draw()
     {
-        DataBase db = new DataBase();
-        CustomerDetailsScreen customerDetailsScreen = new CustomerDetailsScreen();
-
-        db.InsertCustomer(
-            "Bob",
-            "Bobsen",
-            new Address("Vejgade Alle", "28B", "Herrens Mark", 1234, "Lalaland"),
-            new ContactInfo("88888888", "test@mail.com")
-        );
-        db.InsertCustomer(
-            "Søren",
-            "Sørensen",
-            new Address("Østre-nøresøndergade", "2. sal t.v", "Beyond Herrens Mark", 1234, "Lalaland"),
-            new ContactInfo("12341234", "test2@mail.com")
-        );
-
         Clear(this);
-        ListPage<Customer> listPage = new ListPage<Customer>();
-        foreach (var customer in db.GetAllCustomers())
-        {
-            listPage.Add(customer);
-        }
+        var listPage = Program.CreateListPageWith(
+            DataBase.Instance.GetAllCustomers(),
+            ("Kundenummer", "CustomerId"),
+            ("Navn", "FullName"),
+            ("Contact", "ContactInfo"));
 
-        listPage.AddColumn("Kundenummer", "CustomerId");
-        listPage.AddColumn("Navn", "FullName");
-        listPage.AddColumn("Telefon", "PhoneNumber");
-        listPage.AddColumn("Email", "Email");
-        Customer selected = listPage.Select();
-        SelectedId = selected.CustomerId; // Tager den valgte kunde og gemmer den i SelectedId, til CustomerDetailsScreen
-                                          // Lige pt. opdatere den kun anden gang, man går ind på skærmen
-
-        if (selected != null)
-        {
-            Screen.Display(customerDetailsScreen);
-        }
+        if (listPage.Select() is Customer selected)
+            Screen.Display(new CustomerDetailsScreen(selected.CustomerId));
     }
 }
