@@ -11,7 +11,8 @@ class Program
     {
 
         var db = DataBase.Instance;
-        db.InsertCustomer(
+        //db.CreateCustomerList();
+        /*db.InsertCustomer(
             "Bob",
             "Bobsen",
             new Address("Vejgade Alle", "28B", "Herrens Mark", 1234, "Lalaland"),
@@ -22,12 +23,15 @@ class Program
             "Sørensen",
             new Address("Østre-nøresøndergade", "2. sal t.v", "Beyond Herrens Mark", 1234, "Lalaland"),
             new ContactInfo("12341234", "test2@mail.com")
-            );
+            );*/
+        
+        //db.CreateCustomerList();
+        //db.GetAllCustomers();
         CustomerListScreen customerListScreen = new CustomerListScreen();
         Screen.Display(customerListScreen);
 
         /*foreach (var customer in db.GetAllCustomers()) {
-            WriteLine(customer);
+            Console.WriteLine(customer.FirstName);
         }*/
 
     }

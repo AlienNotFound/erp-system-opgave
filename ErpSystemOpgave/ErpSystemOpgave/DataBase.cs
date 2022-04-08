@@ -1,4 +1,6 @@
-﻿namespace ErpSystemOpgave;
+﻿using System.Data.SqlClient;
+
+namespace ErpSystemOpgave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,18 +28,42 @@ public sealed class DataBase
     private int _nextCustomerId;
     private int NextCustomerId => _nextCustomerId++;
 
-
     ////////////////////////////////////////////////////////////////////////////
     /////////////         Customer        //////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
-    public Customer? GetCustomerFromId(int customerId)
-        => customers.FirstOrDefault(c => c.CustomerId == customerId);
 
     // Hvis vi blot returnerede en reference til _customers, ville consumeren kunne ændre i listen.
     // Med GetRange() returnerer vi en kopi af indholdet i stedet.
     public IEnumerable<Customer> GetAllCustomers()
-        => customers.GetRange(0, customers.Count);
+    {
+        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
 
+        SqlDataReader dt;
+        SqlCommand cmd = new SqlCommand("SELECT * FROM Customers INNER JOIN Addresses ON Addresses.Id = Customers.AddressId INNER JOIN Contacts ON Contacts.Id = Customers.AddressId", connection);
+        dt = cmd.ExecuteReader();
+
+        if (customers.Count == 0)
+        {
+            while (dt.Read())
+            {
+                customers.Add(new Customer(
+                    dt["FirstName"].ToString(),
+                    dt["LastName"].ToString(),
+                    new Address(dt["Street"].ToString(), dt["HouseNumber"].ToString(), dt["City"].ToString(), short.Parse(dt["ZipCode"].ToString()), dt["Country"].ToString()),
+                    new ContactInfo(dt["PhoneNumber"].ToString(), dt["Email"].ToString()),
+                    NextCustomerId
+                ));
+            }
+        }
+        connection.Close();
+        return customers.GetRange(0, customers.Count);
+    }
+    
+    public Customer? GetCustomerFromId(int customerId)
+        => customers.FirstOrDefault(c => c.CustomerId == customerId);
+    
     public void InsertCustomer(
         string firstName,
         string lastName,

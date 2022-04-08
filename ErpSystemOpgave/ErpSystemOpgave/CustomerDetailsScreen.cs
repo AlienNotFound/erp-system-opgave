@@ -18,16 +18,21 @@ public class CustomerDetailsScreen : Screen
     {
         DataBase db = DataBase.Instance;
         CustomerListScreen customerListScreen = new CustomerListScreen();
-        ListPage<Customer> listPage = new ListPage<Customer>();
-
+        //ListPage<Customer> listPage = new ListPage<Customer>();
+        //Customer customer = db.GetCustomerFromId(CustomerId) ?? throw new Exception("Invalid customer ID");
         Clear(this);
-        Customer customer = db.GetCustomerFromId(CustomerId) ?? throw new Exception("Invalid customer ID");
+        var listPage = Program.CreateListPageWith(
+            DataBase.Instance.GetAllCustomers(),
+            ("Navn", "FullName"),
+            ("Adresse", "Address"),
+            ("Sidste køb", "LastPurchase")
+            );
 
-        listPage.Add(customer!);
 
+        /*listPage.Add(customer!);
         listPage.AddColumn("Navn", "FirstName");
         listPage.AddColumn("Adresse", "Address");
-        listPage.AddColumn("Sidste køb", "LastPurchase");
+        listPage.AddColumn("Sidste køb", "LastPurchase");*/
         listPage.Draw();
 
         ConsoleKey key;
