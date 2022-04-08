@@ -31,7 +31,7 @@ public class CustomerUpdateScreen : Screen
                 while (newname is null)
                     newname = Console.ReadLine();
                 customer.FirstName = newname;
-                db.UpdateCustomer(customer_id, customer);
+                //db.UpdateCustomer(customer_id, customer);
             }
         )
         );

@@ -41,7 +41,9 @@ public sealed class DataBase
         connection.Open();
 
         SqlDataReader dt;
-        SqlCommand cmd = new SqlCommand("SELECT * FROM Customers INNER JOIN Addresses ON Addresses.Id = Customers.AddressId INNER JOIN Contacts ON Contacts.Id = Customers.AddressId", connection);
+        SqlCommand cmd = new SqlCommand(@"SELECT * FROM Customers
+                                                    + INNER JOIN Addresses ON Addresses.Id = Customers.AddressId
+                                                    + INNER JOIN Contacts ON Contacts.Id = Customers.AddressId", connection);
         dt = cmd.ExecuteReader();
 
         if (customers.Count == 0)
@@ -51,9 +53,15 @@ public sealed class DataBase
                 customers.Add(new Customer(
                     dt["FirstName"].ToString(),
                     dt["LastName"].ToString(),
-                    new Address(dt["Street"].ToString(), dt["HouseNumber"].ToString(), dt["City"].ToString(), short.Parse(dt["ZipCode"].ToString()), dt["Country"].ToString()),
-                    new ContactInfo(dt["PhoneNumber"].ToString(), dt["Email"].ToString()),
-                    NextCustomerId
+                    new Address(dt["Street"].ToString(),
+                        dt["HouseNumber"].ToString(),
+                        dt["City"].ToString(), 
+                        short.Parse(dt["ZipCode"].ToString()),
+                        dt["Country"].ToString()),
+                    new ContactInfo(dt["PhoneNumber"].ToString(),
+                        dt["Email"].ToString()),
+                    Int32.Parse(dt["Id"].ToString())
+                    
                 ));
             }
         }
@@ -67,22 +75,91 @@ public sealed class DataBase
     public void InsertCustomer(
         string firstName,
         string lastName,
-        Address address,
-        ContactInfo contactInfo)
+        string street,
+        string houseNumber,
+        string city,
+        short zipCode,
+        string country,
+        string phoneNumber,
+        string email)
     {
-        customers.Add(new Customer(
-            firstName,
-            lastName,
-            address,
-            contactInfo,
-            NextCustomerId
-        ));
+        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        SqlDataReader dt;
+        SqlCommand cmd = new SqlCommand(@"INSERT INTO Addresses(Street, HouseNumber, City, ZipCode, Country)
+                                                     VALUES (@street, @houseNumber, @city, @zipCode, @country)
+                                                     INSERT INTO Contacts(PhoneNumber, Email)
+                                                     VALUES (@phoneNumber, @email)
+                                                     INSERT INTO Customers( FirstName, LastName, AddressId, ContactID)
+                                                     VALUES (@firstName, @lastName, 
+                                                         (SELECT TOP 1 Id FROM Addresses ORDER BY Id DESC),
+                                                         (SELECT TOP 1 Id FROM Contacts ORDER BY Id DESC))", connection);
+        cmd.Parameters.AddWithValue("@street", street);
+        cmd.Parameters.AddWithValue("@houseNumber", houseNumber);
+        cmd.Parameters.AddWithValue("@city", city);
+        cmd.Parameters.AddWithValue("@zipCode", zipCode);
+        cmd.Parameters.AddWithValue("@country", country);
+        cmd.Parameters.AddWithValue("@phoneNumber", phoneNumber);
+        cmd.Parameters.AddWithValue("@email", email);
+        cmd.Parameters.AddWithValue("@firstName", firstName);
+        cmd.Parameters.AddWithValue("@lastName", lastName);
+        dt = cmd.ExecuteReader();
+
+        connection.Close();
     }
 
-    public void UpdateCustomer(int customerId, Customer updatedCustomer)
+    public void UpdateCustomer(int id,
+        string firstName,
+        string lastName,
+        string street,
+        string houseNumber,
+        string city,
+        short zipCode,
+        string country,
+        string phoneNumber,
+        string email)
     {
-        if (customers.FindIndex(c => c.CustomerId == customerId) is var index && index != -1)
-            customers[index] = updatedCustomer;
+        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+
+        SqlDataReader dt;
+        SqlCommand cmd = new SqlCommand(@"UPDATE Customers SET
+                                                    FirstName = @firstName,
+                                                    LastName = @lastName
+                                                    WHERE Id = @id
+
+                                                    UPDATE Addresses SET
+                                                    Street = @street,
+                                                    HouseNumber = @houseNumber,
+                                                    City = @city,
+                                                    ZipCode = @zipCode,
+                                                    Country = @country
+                                                    FROM Customers C, Addresses A
+                                                    WHERE C.AddressId = A.Id
+                                                    AND C.Id = @id
+
+                                                    UPDATE Contacts SET
+                                                    PhoneNumber = @phoneNumber,
+                                                    Email = @email
+                                                    FROM Customers C, Contacts CO
+                                                    WHERE C.ContactId = CO.Id
+                                                    AND C.Id = @id", connection);         
+        cmd.Parameters.AddWithValue("@id", id);
+        cmd.Parameters.AddWithValue("@street", street);
+        cmd.Parameters.AddWithValue("@houseNumber", houseNumber);
+        cmd.Parameters.AddWithValue("@city", city);
+        cmd.Parameters.AddWithValue("@zipCode", zipCode);
+        cmd.Parameters.AddWithValue("@country", country);
+        cmd.Parameters.AddWithValue("@phoneNumber", phoneNumber);
+        cmd.Parameters.AddWithValue("@email", email);
+        cmd.Parameters.AddWithValue("@firstName", firstName);
+        cmd.Parameters.AddWithValue("@lastName", lastName);
+        dt = cmd.ExecuteReader();
+
+        connection.Close();
     }
 
     public void DeleteCustomerFromId(int customerId)

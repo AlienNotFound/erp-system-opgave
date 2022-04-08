@@ -9,30 +9,30 @@ class Program
 {
     public static void Main(string[] args)
     {
-
         var db = DataBase.Instance;
-        //db.CreateCustomerList();
-        /*db.InsertCustomer(
-            "Bob",
-            "Bobsen",
-            new Address("Vejgade Alle", "28B", "Herrens Mark", 1234, "Lalaland"),
-            new ContactInfo("88888888", "test@mail.com")
-            );
-        db.InsertCustomer(
-            "Søren",
-            "Sørensen",
-            new Address("Østre-nøresøndergade", "2. sal t.v", "Beyond Herrens Mark", 1234, "Lalaland"),
-            new ContactInfo("12341234", "test2@mail.com")
-            );*/
         
-        //db.CreateCustomerList();
-        //db.GetAllCustomers();
-        CustomerListScreen customerListScreen = new CustomerListScreen();
-        Screen.Display(customerListScreen);
-
-        /*foreach (var customer in db.GetAllCustomers()) {
-            Console.WriteLine(customer.FirstName);
-        }*/
+        /*Console.Write("Fornavn: ");
+        string firstName = Console.ReadLine();
+        Console.Write("Efternavn: ");
+        string lastName = Console.ReadLine();
+        Console.Write("Vejnavn: ");
+        string street = Console.ReadLine();
+        Console.Write("Vejnummer: ");
+        string houseNumber = Console.ReadLine();
+        Console.Write("Postnummer: ");
+        string zipCode = Console.ReadLine();
+        Console.Write("By: ");
+        string city = Console.ReadLine();
+        Console.Write("Land: ");
+        string country = Console.ReadLine();
+        Console.Write("Telefonnummer: ");
+        string phoneNumber = Console.ReadLine();
+        Console.Write("E-mail: ");
+        string email = Console.ReadLine();
+        
+        db.UpdateCustomer(2,firstName, lastName, street, houseNumber, city, short.Parse(zipCode), country, phoneNumber, email);*/
+        /*CustomerListScreen customerListScreen = new CustomerListScreen();
+        Screen.Display(customerListScreen);*/
 
     }
 
