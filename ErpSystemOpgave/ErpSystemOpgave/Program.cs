@@ -11,28 +11,8 @@ class Program
     {
         var db = DataBase.Instance;
         
-        /*Console.Write("Fornavn: ");
-        string firstName = Console.ReadLine();
-        Console.Write("Efternavn: ");
-        string lastName = Console.ReadLine();
-        Console.Write("Vejnavn: ");
-        string street = Console.ReadLine();
-        Console.Write("Vejnummer: ");
-        string houseNumber = Console.ReadLine();
-        Console.Write("Postnummer: ");
-        string zipCode = Console.ReadLine();
-        Console.Write("By: ");
-        string city = Console.ReadLine();
-        Console.Write("Land: ");
-        string country = Console.ReadLine();
-        Console.Write("Telefonnummer: ");
-        string phoneNumber = Console.ReadLine();
-        Console.Write("E-mail: ");
-        string email = Console.ReadLine();
-        
-        db.UpdateCustomer(2,firstName, lastName, street, houseNumber, city, short.Parse(zipCode), country, phoneNumber, email);*/
-        /*CustomerListScreen customerListScreen = new CustomerListScreen();
-        Screen.Display(customerListScreen);*/
+        CustomerListScreen customerListScreen = new CustomerListScreen();
+        Screen.Display(customerListScreen);
 
     }
 

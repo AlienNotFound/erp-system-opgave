@@ -14,7 +14,7 @@ public class Address
         Country = country;
     }
 
-    public override string ToString() => $"{Street} {HouseNumber}, {City}/{ZipCode} - {Country}";
+    public override string ToString() => $"{Street} {HouseNumber}, {City} {ZipCode} - {Country}";
 
     public string Street { get; private set; }
     public string HouseNumber { get; private set; } //? Et husnummer kunne fx være "2B" eller "2.S t.v". Af den grund String.

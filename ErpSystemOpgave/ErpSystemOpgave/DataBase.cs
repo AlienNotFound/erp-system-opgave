@@ -42,28 +42,25 @@ public sealed class DataBase
 
         SqlDataReader dt;
         SqlCommand cmd = new SqlCommand(@"SELECT * FROM Customers
-                                                    + INNER JOIN Addresses ON Addresses.Id = Customers.AddressId
-                                                    + INNER JOIN Contacts ON Contacts.Id = Customers.AddressId", connection);
+                                                    INNER JOIN Addresses ON Addresses.Id = Customers.AddressId
+                                                    INNER JOIN Contacts ON Contacts.Id = Customers.AddressId", connection);
         dt = cmd.ExecuteReader();
+        customers.Clear();
 
-        if (customers.Count == 0)
+        while (dt.Read())
         {
-            while (dt.Read())
-            {
-                customers.Add(new Customer(
-                    dt["FirstName"].ToString(),
-                    dt["LastName"].ToString(),
-                    new Address(dt["Street"].ToString(),
-                        dt["HouseNumber"].ToString(),
-                        dt["City"].ToString(), 
-                        short.Parse(dt["ZipCode"].ToString()),
-                        dt["Country"].ToString()),
-                    new ContactInfo(dt["PhoneNumber"].ToString(),
-                        dt["Email"].ToString()),
-                    Int32.Parse(dt["Id"].ToString())
-                    
-                ));
-            }
+            customers.Add(new Customer(
+                dt["FirstName"].ToString(),
+                dt["LastName"].ToString(),
+                new Address(dt["Street"].ToString(),
+                    dt["HouseNumber"].ToString(),
+                    dt["City"].ToString(), 
+                    short.Parse(dt["ZipCode"].ToString()),
+                    dt["Country"].ToString()),
+                new ContactInfo(dt["PhoneNumber"].ToString(),
+                    dt["Email"].ToString()),
+                Int32.Parse(dt["Id"].ToString())
+            ));
         }
         connection.Close();
         return customers.GetRange(0, customers.Count);
