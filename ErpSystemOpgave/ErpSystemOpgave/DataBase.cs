@@ -40,27 +40,34 @@ public sealed class DataBase
         SqlConnection connection = new SqlConnection(connectionString);
         connection.Open();
 
-        SqlDataReader dt;
         SqlCommand cmd = new SqlCommand(@"SELECT * FROM Customers
                                                     INNER JOIN Addresses ON Addresses.Id = Customers.AddressId
                                                     INNER JOIN Contacts ON Contacts.Id = Customers.AddressId", connection);
-        dt = cmd.ExecuteReader();
+        var dt = cmd.ExecuteReader();
         customers.Clear();
 
-        while (dt.Read())
+        try
         {
-            customers.Add(new Customer(
-                dt["FirstName"].ToString(),
-                dt["LastName"].ToString(),
-                new Address(dt["Street"].ToString(),
-                    dt["HouseNumber"].ToString(),
-                    dt["City"].ToString(), 
-                    short.Parse(dt["ZipCode"].ToString()),
-                    dt["Country"].ToString()),
-                new ContactInfo(dt["PhoneNumber"].ToString(),
-                    dt["Email"].ToString()),
-                Int32.Parse(dt["Id"].ToString())
-            ));
+            while (dt.Read()) //TODO: Unit test at den finder data og kolonner
+            {
+                customers.Add(new Customer(
+                    dt["FirstName"].ToString()!,
+                    dt["LastName"].ToString()!,
+                    new Address(dt["Street"].ToString()!,
+                        dt["HouseNumber"].ToString()!,
+                        dt["City"].ToString()!, 
+                        short.Parse(dt["ZipCode"].ToString()!),
+                        dt["Country"].ToString()!),
+                    new ContactInfo(dt["PhoneNumber"].ToString()!,
+                        dt["Email"].ToString()),
+                    Int32.Parse(dt["Id"].ToString()!)
+                ));
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
         connection.Close();
         return customers.GetRange(0, customers.Count);
@@ -83,8 +90,7 @@ public sealed class DataBase
         string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
         SqlConnection connection = new SqlConnection(connectionString);
         connection.Open();
-
-        SqlDataReader dt;
+        
         SqlCommand cmd = new SqlCommand(@"INSERT INTO Addresses(Street, HouseNumber, City, ZipCode, Country)
                                                      VALUES (@street, @houseNumber, @city, @zipCode, @country)
                                                      INSERT INTO Contacts(PhoneNumber, Email)
@@ -102,7 +108,7 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@email", email);
         cmd.Parameters.AddWithValue("@firstName", firstName);
         cmd.Parameters.AddWithValue("@lastName", lastName);
-        dt = cmd.ExecuteReader();
+        cmd.ExecuteReader();
 
         connection.Close();
     }
@@ -121,8 +127,7 @@ public sealed class DataBase
         string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
         SqlConnection connection = new SqlConnection(connectionString);
         connection.Open();
-
-        SqlDataReader dt;
+        
         SqlCommand cmd = new SqlCommand(@"UPDATE Customers SET
                                                     FirstName = @firstName,
                                                     LastName = @lastName
@@ -154,7 +159,7 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@email", email);
         cmd.Parameters.AddWithValue("@firstName", firstName);
         cmd.Parameters.AddWithValue("@lastName", lastName);
-        dt = cmd.ExecuteReader();
+        cmd.ExecuteReader();
 
         connection.Close();
     }
@@ -174,59 +179,44 @@ public sealed class DataBase
     /////////////         Orders          //////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
 
-    public void UpdateSalesOrder(int OrderNumber, int CustomerId, decimal Price)
+    public void UpdateSalesOrder(int orderNumber, int customerId, decimal price)
     {
-        List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-        salesOrderHeaders.Add(new SalesOrderHeader(3, 24, OrderState.Created, 22, new List<SalesOrderLine>()));
-        salesOrderHeaders.Add(new SalesOrderHeader(2, 35, OrderState.Created, 20, new List<SalesOrderLine>()));
-        salesOrderHeaders.Add(new SalesOrderHeader(5, 89, OrderState.Created, 30, new List<SalesOrderLine>()));
-
         var result = from s in salesOrderHeaders
-                     where s.OrderNumber == OrderNumber
+                     where s.OrderNumber == orderNumber
                      select s;
         foreach (var salesOrder in result)
         {
             Console.WriteLine("\nOriginalt: ");
             Console.WriteLine("Kunde id: " + salesOrder.CustomerId);
             Console.WriteLine("Pris: " + salesOrder.Price);
-            salesOrder.CustomerId = CustomerId;
-            salesOrder.Price = Price;
+            salesOrder.CustomerId = customerId;
+            salesOrder.Price = price;
             Console.WriteLine("\nOpdateret: ");
             Console.WriteLine("Kunde id: " + salesOrder.CustomerId);
             Console.WriteLine("Pris: " + salesOrder.Price);
         }
     }
 
-    public void DeleteSalesOrder(int OrderNumber)
+    public void DeleteSalesOrder(int orderNumber)
     {
-        List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-        salesOrderHeaders.Add(new SalesOrderHeader(3, 24, OrderState.Created, 22, new List<SalesOrderLine>()));
-        salesOrderHeaders.Add(new SalesOrderHeader(2, 35, OrderState.Created, 20, new List<SalesOrderLine>()));
-        salesOrderHeaders.Add(new SalesOrderHeader(5, 89, OrderState.Created, 30, new List<SalesOrderLine>()));
-
-        salesOrderHeaders.RemoveAll(s => s.OrderNumber == OrderNumber);
+        salesOrderHeaders.RemoveAll(s => s.OrderNumber == orderNumber);
     }
 
 
-    public SalesOrderHeader GetSalesOrderById(int orderId)
+    public SalesOrderHeader? GetSalesOrderById(int orderId)
     {
-        var Order = salesOrderHeaders.Find(id => id.OrderNumber == orderId);
-        Console.WriteLine("Ordre nummer: " + Order.OrderNumber
-                                           + " Kundeid: " + Order.CustomerId
-                                           + " Status: " + Order.State
-                                           + " Pris: " + Order.Price
+        var order = salesOrderHeaders.Find(id => id.OrderNumber == orderId);
+        Console.WriteLine("Ordre nummer: " + order?.OrderNumber
+                                           + " Kundeid: " + order?.CustomerId
+                                           + " Status: " + order?.State
+                                           + " Pris: " + order?.Price
                                            //+ " Ordrelinje: " + salesOrderHeaders[orderId].OrderLines
                                            );
-        return Order;
+        return order;
     }
 
     public void GetAllSalesOrders()
     {
-        List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-        salesOrderHeaders.Add(new SalesOrderHeader(3, 24, OrderState.Created, 22, new List<SalesOrderLine>()));
-        salesOrderHeaders.Add(new SalesOrderHeader(2, 35, OrderState.Created, 20, new List<SalesOrderLine>()));
-        salesOrderHeaders.Add(new SalesOrderHeader(5, 89, OrderState.Created, 30, new List<SalesOrderLine>()));
-
         for (int i = 0; i < salesOrderHeaders.Count; i++)
         {
             Console.WriteLine("Ordre nummer: " + salesOrderHeaders[i].OrderNumber
@@ -238,9 +228,8 @@ public sealed class DataBase
         }
     }
 
-    public void CreateSalesOrder(int OrderNumber, int CustomerId, decimal Price)
+    public void CreateSalesOrder(int orderNumber, int customerId, decimal price)
     {
-        List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-        salesOrderHeaders.Add(new SalesOrderHeader(OrderNumber, CustomerId, OrderState.Created, Price, new List<SalesOrderLine>()));
+        salesOrderHeaders.Add(new SalesOrderHeader(orderNumber, customerId, OrderState.Created, price, new List<SalesOrderLine>()));
     }
 }

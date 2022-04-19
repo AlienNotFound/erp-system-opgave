@@ -13,9 +13,7 @@ class Program
         
         CustomerListScreen customerListScreen = new CustomerListScreen();
         Screen.Display(customerListScreen);
-
     }
-
     public static void ShowMenu(params (String Description, Action Action)[] items)
     {
         ListPage<MenuItem> menu = new();
@@ -34,8 +32,6 @@ class Program
         return listPage;
     }
 }
-
-
 static class ListPageExtensions
 {
     public static void AddColumnAligned<T>(this ListPage<T> listPage, string title, string property, IEnumerable<T> collection)
