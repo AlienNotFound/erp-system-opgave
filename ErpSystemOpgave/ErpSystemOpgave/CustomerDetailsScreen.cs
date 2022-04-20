@@ -16,19 +16,19 @@ public class CustomerDetailsScreen : Screen
     }
     protected override void Draw()
     {
+        Clear(this);
         DataBase db = DataBase.Instance;
         CustomerListScreen customerListScreen = new CustomerListScreen();
         ListPage<Customer> listPage = new ListPage<Customer>();
-
-        Clear(this);
         Customer customer = db.GetCustomerFromId(CustomerId) ?? throw new Exception("Invalid customer ID");
 
-        listPage.Add(customer!);
-
+        listPage.Add(customer);
         listPage.AddColumn("Navn", "FirstName");
-        listPage.AddColumn("Adresse", "Address");
+        listPage.AddColumn("Adresse", "Address", customer.FullAddress.Length + 3);
         listPage.AddColumn("Sidste køb", "LastPurchase");
         listPage.Draw();
+        
+        Console.WriteLine("\nTryk på BACKSPACE for at vende tilbage til kundelisten");
 
         ConsoleKey key;
         key = Console.ReadKey().Key;

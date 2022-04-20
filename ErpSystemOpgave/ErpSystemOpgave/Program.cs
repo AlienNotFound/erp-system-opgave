@@ -9,29 +9,11 @@ class Program
 {
     public static void Main(string[] args)
     {
-
         var db = DataBase.Instance;
-        db.InsertCustomer(
-            "Bob",
-            "Bobsen",
-            new Address("Vejgade Alle", "28B", "Herrens Mark", 1234, "Lalaland"),
-            new ContactInfo("88888888", "test@mail.com")
-            );
-        db.InsertCustomer(
-            "Søren",
-            "Sørensen",
-            new Address("Østre-nøresøndergade", "2. sal t.v", "Beyond Herrens Mark", 1234, "Lalaland"),
-            new ContactInfo("12341234", "test2@mail.com")
-            );
+        
         CustomerListScreen customerListScreen = new CustomerListScreen();
         Screen.Display(customerListScreen);
-
-        /*foreach (var customer in db.GetAllCustomers()) {
-            WriteLine(customer);
-        }*/
-
     }
-
     public static void ShowMenu(params (String Description, Action Action)[] items)
     {
         ListPage<MenuItem> menu = new();
@@ -50,8 +32,6 @@ class Program
         return listPage;
     }
 }
-
-
 static class ListPageExtensions
 {
     public static void AddColumnAligned<T>(this ListPage<T> listPage, string title, string property, IEnumerable<T> collection)
