@@ -6,9 +6,7 @@ namespace ErpSystemOpgave;
 public class CustomerDetailsScreen : Screen
 {
     public int CustomerId = CustomerListScreen.SelectedId;
-
     public override string Title { get; set; } = "Kunde detaljer";
-
 
     public CustomerDetailsScreen(int customerId)
     {
@@ -33,8 +31,6 @@ public class CustomerDetailsScreen : Screen
         ConsoleKey key;
         key = Console.ReadKey().Key;
         if (key == ConsoleKey.Backspace)
-        {
             Screen.Display(customerListScreen);
-        }
     }
 }

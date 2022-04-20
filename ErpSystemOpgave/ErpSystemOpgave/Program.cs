@@ -12,7 +12,8 @@ class Program
         var db = DataBase.Instance;
         
         CustomerListScreen customerListScreen = new CustomerListScreen();
-        Screen.Display(customerListScreen);
+        ProductListScreen productListScreen = new ProductListScreen();
+        Screen.Display(productListScreen);
     }
     public static void ShowMenu(params (String Description, Action Action)[] items)
     {
