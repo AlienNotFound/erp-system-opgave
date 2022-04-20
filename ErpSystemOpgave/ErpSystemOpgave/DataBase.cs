@@ -13,7 +13,7 @@ using TECHCOOL.UI;
 public sealed class DataBase
 {
     static DataBase? _instance = null;
-    private DataBase() { }
+    //private DataBase() { }
 
     public static DataBase Instance
     {
