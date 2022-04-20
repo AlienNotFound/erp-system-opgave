@@ -46,6 +46,7 @@ public class EditScreen<T>
         InputFields.Add(new ButtonField("Okay", () => ReturnValue = BuildReturn()));
         InputFields.Add(new ButtonField("Tilbage", () => ReturnValue = record));
         Record = record;
+        System.Diagnostics.Debug.WriteLine($"Created edit screen with title: \"{title}\" for {record} with params: {props}");
     }
 
     // TODO: `ExpandProp` and `GetProp` largely do the same. just merge them.
