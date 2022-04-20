@@ -19,6 +19,9 @@ public class CustomerListScreen : Screen
         
         Console.WriteLine("\nTryk på ENTER på den valgte kunde, for at se detaljer\n");
         if (listPage.Select() is Customer selected)
+        {
+            Screen.Clear();
             Screen.Display(new CustomerDetailsScreen(selected.CustomerId));
+        }
     }
 }

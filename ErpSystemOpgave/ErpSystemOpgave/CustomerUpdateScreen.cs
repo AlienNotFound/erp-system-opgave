@@ -7,7 +7,7 @@ using TECHCOOL.UI;
 
 public class CustomerUpdateScreen : Screen
 {
-    public override string Title { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    public override string Title { get; set; }
     private Customer customer;
     private int customer_id;
     private ListPage<Customer> listpage = new();
@@ -25,7 +25,7 @@ public class CustomerUpdateScreen : Screen
     {
         System.Console.WriteLine("Change field");
         Program.ShowMenu(
-            ("Fornavn", () =>
+            ($"Fornavn: {customer.FirstName}", () =>
             {
                 string? newname = null;
                 while (newname is null)
@@ -33,7 +33,18 @@ public class CustomerUpdateScreen : Screen
                 customer.FirstName = newname;
                 //db.UpdateCustomer(customer_id, customer);
             }
-        )
+        ),
+            ($"Efternavn: {customer.LastName}", () =>
+            {
+                string? newname = null;
+                while (newname is null)
+                    newname = Console.ReadLine();
+                customer.LastName = newname;
+                db.UpdateCustomer(customer_id, customer);
+                Screen.Clear();
+            }
+        ),
+            ($"Tilbage", () => Screen.Display(new CustomerListScreen()))
         );
     }
 }
