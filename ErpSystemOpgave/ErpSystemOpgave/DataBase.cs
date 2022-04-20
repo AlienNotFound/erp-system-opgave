@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Data;
 
-
 public sealed class DataBase
 {
     static DataBase? _instance = null;
@@ -28,19 +27,22 @@ public sealed class DataBase
     private int _nextCustomerId;
     private int NextCustomerId => _nextCustomerId++;
 
-    ////////////////////////////////////////////////////////////////////////////
-    /////////////         Customer        //////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////////////////////////////
+    /////////////         Customer        /////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    public Customer? GetCustomerFromId(int customerId)
+        => customers.FirstOrDefault(c => c.CustomerId == customerId);
 
     // Hvis vi blot returnerede en reference til _customers, ville consumeren kunne ændre i listen.
     // Med GetRange() returnerer vi en kopi af indholdet i stedet.
     public IEnumerable<Customer> GetAllCustomers()
     {
         string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new SqlConnection(connectionString);
+        SqlConnection connection = new(connectionString);
         connection.Open();
 
-        SqlCommand cmd = new SqlCommand(@"SELECT * FROM Customers
+        SqlCommand cmd = new(@"SELECT * FROM Customers
                                                     INNER JOIN Addresses ON Addresses.Id = Customers.AddressId
                                                     INNER JOIN Contacts ON Contacts.Id = Customers.AddressId", connection);
         var dt = cmd.ExecuteReader();
@@ -55,7 +57,7 @@ public sealed class DataBase
                     dt["LastName"].ToString()!,
                     new Address(dt["Street"].ToString()!,
                         dt["HouseNumber"].ToString()!,
-                        dt["City"].ToString()!, 
+                        dt["City"].ToString()!,
                         short.Parse(dt["ZipCode"].ToString()!),
                         dt["Country"].ToString()!),
                     new ContactInfo(dt["PhoneNumber"].ToString()!,
@@ -72,10 +74,7 @@ public sealed class DataBase
         connection.Close();
         return customers.GetRange(0, customers.Count);
     }
-    
-    public Customer? GetCustomerFromId(int customerId)
-        => customers.FirstOrDefault(c => c.CustomerId == customerId);
-    
+
     public void InsertCustomer(
         string firstName,
         string lastName,
@@ -88,10 +87,10 @@ public sealed class DataBase
         string email)
     {
         string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new SqlConnection(connectionString);
+        SqlConnection connection = new(connectionString);
         connection.Open();
-        
-        SqlCommand cmd = new SqlCommand(@"INSERT INTO Addresses(Street, HouseNumber, City, ZipCode, Country)
+
+        SqlCommand cmd = new(@"INSERT INTO Addresses(Street, HouseNumber, City, ZipCode, Country)
                                                      VALUES (@street, @houseNumber, @city, @zipCode, @country)
                                                      INSERT INTO Contacts(PhoneNumber, Email)
                                                      VALUES (@phoneNumber, @email)
@@ -125,10 +124,10 @@ public sealed class DataBase
         string email)
     {
         string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new SqlConnection(connectionString);
+        SqlConnection connection = new(connectionString);
         connection.Open();
-        
-        SqlCommand cmd = new SqlCommand(@"UPDATE Customers SET
+
+        SqlCommand cmd = new(@"UPDATE Customers SET
                                                     FirstName = @firstName,
                                                     LastName = @lastName
                                                     WHERE Id = @id
@@ -148,7 +147,7 @@ public sealed class DataBase
                                                     Email = @email
                                                     FROM Customers C, Contacts CO
                                                     WHERE C.ContactId = CO.Id
-                                                    AND C.Id = @id", connection);         
+                                                    AND C.Id = @id", connection);
         cmd.Parameters.AddWithValue("@id", id);
         cmd.Parameters.AddWithValue("@street", street);
         cmd.Parameters.AddWithValue("@houseNumber", houseNumber);
@@ -170,14 +169,14 @@ public sealed class DataBase
     }
 
 
-    ////////////////////////////////////////////////////////////////////////////
-    /////////////         Products        //////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    /////////////         Products        /////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
 
-    ////////////////////////////////////////////////////////////////////////////
-    /////////////         Orders          //////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+    /////////////         Orders          /////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
     public void UpdateSalesOrder(int orderNumber, int customerId, decimal price)
     {
@@ -205,14 +204,17 @@ public sealed class DataBase
 
     public SalesOrderHeader? GetSalesOrderById(int orderId)
     {
-        var order = salesOrderHeaders.Find(id => id.OrderNumber == orderId);
-        Console.WriteLine("Ordre nummer: " + order?.OrderNumber
-                                           + " Kundeid: " + order?.CustomerId
-                                           + " Status: " + order?.State
-                                           + " Pris: " + order?.Price
-                                           //+ " Ordrelinje: " + salesOrderHeaders[orderId].OrderLines
-                                           );
-        return order;
+        var Order = salesOrderHeaders.Find(id => id.OrderNumber == orderId);
+        if (Order is null)
+            return null;
+        Console.WriteLine("Ordre nummer: " + Order.OrderNumber
+                                        + " Kundeid: " + Order.CustomerId
+                                        + " Status: " + Order.State
+                                        + " Pris: " + Order.Price
+                                        //+ " Ordrelinje: " + salesOrderHeaders[orderId].OrderLines
+                                        );
+
+        return Order;
     }
 
     public void GetAllSalesOrders()
