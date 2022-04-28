@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualBasic;
 using TECHCOOL.UI;
 namespace ErpSystemOpgave.Data;
@@ -13,18 +14,6 @@ public class SalesOrderHearderScreen : Screen
         List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
         List<Customer> customers = new List<Customer>();
         
-        db.InsertCustomer(
-            "Bob",
-            "Bobsen",
-            new Address("Vejgade Alle", "28B", "Herrens Mark", 1234, "Lalaland"),
-            new ContactInfo("88888888", "test@mail.com")
-        );
-        db.InsertCustomer(
-            "Søren",
-            "Sørensen",
-            new Address("Østre-nøresøndergade", "2. sal t.v", "Beyond Herrens Mark", 1234, "Lalaland"),
-            new ContactInfo("12341234", "test2@mail.com")
-        );
         
         db.CreateSalesOrder(2,1,200);
         db.CreateSalesOrder(3,0,200);

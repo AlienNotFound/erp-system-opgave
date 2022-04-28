@@ -11,6 +11,7 @@ public class Customer : Person
 {
     public int CustomerId { get; set; }
     public string FullName { get; set; }
+    public string FullAddress { get; set; }
     public DateTime? LastPurchase { get; set; }
 
     public Customer(string firstName, string lastName, Address address, ContactInfo contactInfo, int id)
@@ -18,5 +19,6 @@ public class Customer : Person
     {
         CustomerId = id;
         FullName = $"{FirstName} {LastName}";
+        FullAddress = $"{Address.Street}, {Address.ZipCode} {Address.City}";
     }
 }
