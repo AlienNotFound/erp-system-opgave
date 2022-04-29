@@ -29,7 +29,6 @@ namespace ErpSystemOpgave
         private int _nextCustomerId;
         private int NextCustomerId => _nextCustomerId++;
 
-
         ///////////////////////////////////////////////////////////////////////////
         /////////////         Customer        /////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////
@@ -170,12 +169,10 @@ namespace ErpSystemOpgave
 
             connection.Close();
         }
-
         public void DeleteCustomerFromId(int customerId)
         {
             customers.RemoveAll(c => c.CustomerId == customerId);
         }
-
 
         ///////////////////////////////////////////////////////////////////////////
         /////////////         Products        /////////////////////////////////////
@@ -185,7 +182,70 @@ namespace ErpSystemOpgave
         ///////////////////////////////////////////////////////////////////////////
         /////////////         Orders          /////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////
+        public IEnumerable<SalesOrderHeader> GetAllSalesOrderHeaders()
+        {
+            string connectionString =
+                @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+            SqlConnection connection = new(connectionString);
+            connection.Open();
+            
+            SqlCommand cmd = new(@"SELECT * FROM SalesOrderHeaders
+                                            INNER JOIN Customers ON Customers.Id = SalesOrderHeaders.CustomerId
+                                            ", connection);
+            var dt = cmd.ExecuteReader();
+            salesOrderHeaders.Clear();
 
+            try
+            {
+                while (dt.Read())
+                {
+                    salesOrderHeaders.Add(new SalesOrderHeader(
+                        Int32.Parse(dt["Id"].ToString()!),
+                        Int32.Parse(dt["CustomerId"].ToString()!),
+                        Enum.Parse<OrderState>(dt["State"].ToString()!),
+                        Decimal.Parse(dt["PriceSum"].ToString()!),
+                        DateTime.Parse(dt["Date"].ToString()!)
+                    ));
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+            connection.Close();
+            return salesOrderHeaders.GetRange(0, salesOrderHeaders.Count);
+        }
+        public void InsertOrderLine(int quantity)
+        {
+            string connectionString =
+                @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+            SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            SqlCommand cmd = new(@"INSERT INTO OrderLines(ProductId, Quanity, PricePer, PriceSum, SalesOrderHeaderId)
+                                                     VALUES (@productId, @quantity, @priceper, @pricesum, @salesOrderHeaderId)
+                                                     INSERT INTO Contacts(PhoneNumber, Email)
+                                                     VALUES (@phoneNumber, @email)
+                                                     INSERT INTO Customers( FirstName, LastName, AddressId, ContactID)
+                                                     VALUES (@firstName, @lastName, 
+                                                         (SELECT TOP 1 Id FROM Addresses ORDER BY Id DESC),
+                                                         (SELECT TOP 1 Id FROM Contacts ORDER BY Id DESC))",
+                connection);
+            /*cmd.Parameters.AddWithValue("@street", street);
+            cmd.Parameters.AddWithValue("@houseNumber", houseNumber);
+            cmd.Parameters.AddWithValue("@city", city);
+            cmd.Parameters.AddWithValue("@zipCode", zipCode);
+            cmd.Parameters.AddWithValue("@country", country);
+            cmd.Parameters.AddWithValue("@phoneNumber", phoneNumber);
+            cmd.Parameters.AddWithValue("@email", email);
+            cmd.Parameters.AddWithValue("@firstName", firstName);
+            cmd.Parameters.AddWithValue("@lastName", lastName);*/
+            cmd.ExecuteReader();
+
+            connection.Close();
+        }
         public void UpdateSalesOrder(int orderNumber, int customerId, decimal price)
         {
             var result = from s in salesOrderHeaders
@@ -203,13 +263,10 @@ namespace ErpSystemOpgave
                 Console.WriteLine("Pris: " + salesOrder.Price);
             }
         }
-
         public void DeleteSalesOrder(int orderNumber)
         {
             salesOrderHeaders.RemoveAll(s => s.OrderNumber == orderNumber);
         }
-
-
         public SalesOrderHeader? GetSalesOrderById(int orderId)
         {
             var Order = salesOrderHeaders.Find(id => id.OrderNumber == orderId);
@@ -224,26 +281,10 @@ namespace ErpSystemOpgave
 
             return Order;
         }
-
-        public IEnumerable<SalesOrderHeader> GetAllSalesOrders()
-        {
-            for (int i = 0; i < salesOrderHeaders.Count; i++)
-            {
-                Console.WriteLine("Ordre nummer: " + salesOrderHeaders[i].OrderNumber
-                                                   + " Kundeid: " + salesOrderHeaders[i].CustomerId
-                                                   + " Status: " + salesOrderHeaders[i].State
-                                                   + " Pris: " + salesOrderHeaders[i].Price
-                                                   + " Oprettet: " + salesOrderHeaders[i].CreationTime
-                );
-            }
-            
-            return salesOrderHeaders.GetRange(0, salesOrderHeaders.Count);
-        }
-
-        public void CreateSalesOrder(int orderNumber, int customerId, decimal price)
+        /*public void CreateSalesOrder(int orderNumber, int customerId, decimal price)
         {
             salesOrderHeaders.Add(new SalesOrderHeader(orderNumber, customerId, OrderState.Created, price,
                 new List<SalesOrderLine>()));
-        }
+        }*/
     }
 }

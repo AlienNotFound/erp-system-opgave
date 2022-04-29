@@ -11,13 +11,9 @@ public class SalesOrderHearderScreen : Screen
     protected override void Draw()
     {
         DataBase db = new DataBase();
-        List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-        List<Customer> customers = new List<Customer>();
-        
-        
-        db.CreateSalesOrder(2,1,200);
-        db.CreateSalesOrder(3,0,200);
-        
+        /*List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
+        List<Customer> customers = new List<Customer>();*/
+
         Clear(this);
         ListPage<Customer> customerListPage = new ListPage<Customer>();
         foreach (var customer in db.GetAllCustomers())
@@ -26,7 +22,7 @@ public class SalesOrderHearderScreen : Screen
         }
 
         ListPage<SalesOrderHeader> listPage = new ListPage<SalesOrderHeader>();
-        foreach (var salesOrder in db.GetAllSalesOrders())
+        foreach (var salesOrder in db.GetAllSalesOrderHeaders())
         {
             listPage.Add(salesOrder);
         }
@@ -34,8 +30,7 @@ public class SalesOrderHearderScreen : Screen
         listPage.AddColumn("Ordrenummer", "OrderNumber");
         listPage.AddColumn("Dato", "CreationTime", 25);
         listPage.AddColumn("Kunde id", "CustomerId");
-        customerListPage.AddColumn("Kunde id", "CustomerId");
-        customerListPage.AddColumn("Kunde navn", "FullName");
+        listPage.AddColumn("Kunde navn", "CustomerName");
         listPage.AddColumn("Pris", "Price");
         listPage.Draw();
         customerListPage.Draw();

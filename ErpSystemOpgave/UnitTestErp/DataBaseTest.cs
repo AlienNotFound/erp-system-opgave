@@ -13,9 +13,6 @@ namespace UnitTestsErp
         {
             //arrange
             List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-            salesOrderHeaders.Add(new SalesOrderHeader(3, 24,OrderState.Created,22, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(2, 35,OrderState.Created,20, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(5, 89,OrderState.Created,30, new List<SalesOrderLine>()));
             
             DataBase sut = new DataBase();
             sut.salesOrderHeaders = salesOrderHeaders;
@@ -32,10 +29,7 @@ namespace UnitTestsErp
         {
             //arrange
             List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-            salesOrderHeaders.Add(new SalesOrderHeader(3, 24,OrderState.Created,22, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(2, 35,OrderState.Created,20, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(5, 89,OrderState.Created,30, new List<SalesOrderLine>()));
-            
+
             DataBase sut = new DataBase();
             sut.salesOrderHeaders = salesOrderHeaders;
             
@@ -51,15 +45,12 @@ namespace UnitTestsErp
         {
             //arrange
             List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-            salesOrderHeaders.Add(new SalesOrderHeader(3, 24,OrderState.Created,22, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(2, 35,OrderState.Created,20, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(5, 89,OrderState.Created,30, new List<SalesOrderLine>()));
-            
+
             DataBase sut = new DataBase();
             sut.salesOrderHeaders = salesOrderHeaders;
             
             //act
-            salesOrderHeaders.Add(new SalesOrderHeader(6, 65,OrderState.Created,70, new List<SalesOrderLine>()));
+
             
             //assert
             Assert.True(sut.salesOrderHeaders.Count == 4);
@@ -70,10 +61,7 @@ namespace UnitTestsErp
         {
             //arrange
             List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-            salesOrderHeaders.Add(new SalesOrderHeader(3, 24,OrderState.Created,22, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(2, 35,OrderState.Created,20, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(5, 89,OrderState.Created,30, new List<SalesOrderLine>()));
-            
+
             DataBase sut = new DataBase();
             sut.salesOrderHeaders = salesOrderHeaders;
             
@@ -88,10 +76,7 @@ namespace UnitTestsErp
         {
             //arrange
             List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
-            salesOrderHeaders.Add(new SalesOrderHeader(3, 24,OrderState.Created,22, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(2, 35,OrderState.Created,20, new List<SalesOrderLine>()));
-            salesOrderHeaders.Add(new SalesOrderHeader(5, 89,OrderState.Created,30, new List<SalesOrderLine>()));
-            
+
             DataBase sut = new DataBase();
             
             //act

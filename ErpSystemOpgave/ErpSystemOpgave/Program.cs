@@ -1,3 +1,4 @@
+using ErpSystemOpgave.Data;
 using TECHCOOL.UI;
 namespace ErpSystemOpgave;
 
@@ -6,24 +7,11 @@ class Program
     public static void Main(string[] args)
     {
         var db = DataBase.Instance;
+        db.GetAllCustomers();
 
-        CustomerListScreen customerListScreen = new();
-        Screen.Display(customerListScreen);
-        // var es = new EditScreen<Customer>("Edit Customer", db.GetCustomerFromId(1)!,
-        //     ("first name", "FirstName"),
-        //     ("last name", "LastName"),
-        //     ("Vej", "Address.Street"),
-        //     ("Nr.", "Address.HouseNumber"),
-        //     ("By", "Address.City"),
-        //     ("Phone", "ContactInfo.PhoneNumber"),
-        //     ("Mail", "ContactInfo.Email"));
-
-        // es.Show();
-        // WriteLine("done editting");
-        // WriteLine("first name: {0}", db.GetCustomerFromId(1)?.FirstName);
-        // WriteLine("last name: {0}", db.GetCustomerFromId(1)?.LastName);
-        // WriteLine("address: {0}", db.GetCustomerFromId(1)?.FullAddress);
-        // WriteLine("contactinfo: {0}", db.GetCustomerFromId(1)?.ContactInfo);
+        SalesOrderHearderScreen salesOrderHearderScreen = new SalesOrderHearderScreen();
+        //CustomerListScreen customerListScreen = new();
+        Screen.Display(salesOrderHearderScreen);
     }
     public static void ShowMenu(params (String Description, Action Action)[] items)
     {
