@@ -8,9 +8,9 @@ namespace ErpSystemOpgave;
 public class EditScreen<T>
 {
     private int SelectionIndex;
-    private List<IField> InputFields;
-    private T Record;
-    private string Title;
+    private readonly List<IField> InputFields;
+    private readonly T Record;
+    private readonly string Title;
     private T? ReturnValue;
 
     /// <summary>
@@ -49,9 +49,15 @@ public class EditScreen<T>
         System.Diagnostics.Debug.WriteLine($"Created edit screen with title: \"{title}\" for {record} with params: {props}");
     }
 
-    // TODO: `ExpandProp` and `GetProp` largely do the same. just merge them.
+    /// <summary>
+    /// Recursively "Expand" a property from name so it can be assigned to.
+    /// </summary>
+    /// <param name="target">T</param>
+    /// <param name="property"></param>
+    /// <returns></returns>
     private string ExpandProp(object target, string property)
     {
+        // TODO: `ExpandProp` and `GetProp` largely do the same. just merge them.
         string[] props = property.Split('.');
         if (target.GetType().GetProperty(props[0])?.GetValue(target) is object newTarget)
         {
@@ -59,10 +65,7 @@ public class EditScreen<T>
             ? ExpandProp(newTarget, string.Join('.', props[1..]))
             : newTarget.ToString()!;
         }
-        else
-        {
-            throw new Exception("foo");
-        }
+        throw new Exception("foo");
     }
 
     private (object, string) GetProp(object target, string property)
@@ -92,11 +95,19 @@ public class EditScreen<T>
         return Record;
     }
 
+    /// <summary>
+    /// Start the "main loop" of the EditScreen.
+    /// Draw the screen and await user input, and loop until the user leaves the screen.
+    /// </summary>
+    /// <returns>
+    /// Either the modified `T` if terminated with "Ok". 
+    /// otherwise return the original record unchanged.
+    /// </returns>
     public T Show()
     {
+        ConsoleKeyInfo input = new();
         while (true)
         {
-            var input = Console.ReadKey();
             var field = InputFields[SelectionIndex];
             switch (input.Key)
             {
@@ -113,6 +124,7 @@ public class EditScreen<T>
             if (ReturnValue is not null)
                 return ReturnValue;
             Draw();
+            input = Console.ReadKey();
         }
     }
 
@@ -140,20 +152,28 @@ public class EditScreen<T>
     }
 }
 
-class ButtonField : IField
+public class ButtonField : IField
 {
     public ButtonField(string title, Action action)
     {
         Title = title;
         Action = action;
+        Indent = "";
+    }
+    public ButtonField(string title, Action action, string indent)
+    {
+        Title = title;
+        Action = action;
+        Indent = indent;
     }
 
     public string Title { get; }
     public Action Action { get; }
+    public string Indent { get; set; }
 
     public void Draw(bool focused)
     {
-        var (top, mid, bot, fill) = ("╔{0}╗", "║ {0} ║", "╚{0}╝", '═');
+        var (top, mid, bot, fill) = (Indent + "╔{0}╗", Indent + "║ {0} ║", Indent + "╚{0}╝", '═');
         if (focused)
         {
             Console.BackgroundColor = ConsoleColor.White;
@@ -222,7 +242,7 @@ class InputField : IField
     public string Value { get; set; }
 }
 
-interface IField
+public interface IField
 {
     public void Draw(bool focused);
     public void HandleInput(ConsoleKeyInfo input);

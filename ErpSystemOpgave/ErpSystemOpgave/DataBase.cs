@@ -9,6 +9,7 @@ using Data;
 public sealed class DataBase
 {
     static DataBase? _instance = null;
+    private const string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
     private DataBase() { }
 
     public static DataBase Instance
@@ -27,6 +28,9 @@ public sealed class DataBase
     private int _nextCustomerId;
     private int NextCustomerId => _nextCustomerId++;
 
+    ///////////////////////////////////////////////////////////////////////////
+    /////////////         Utility         /////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
     ///////////////////////////////////////////////////////////////////////////
     /////////////         Customer        /////////////////////////////////////

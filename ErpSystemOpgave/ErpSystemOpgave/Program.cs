@@ -11,8 +11,11 @@ class Program
     {
         var db = DataBase.Instance;
 
-        CustomerListScreen customerListScreen = new();
-        Screen.Display(customerListScreen);
+        var lp = new LandingPage();
+        lp.Show();
+
+        // CustomerListScreen customerListScreen = new();
+        // Screen.Display(customerListScreen);
         // var es = new EditScreen<Customer>("Edit Customer", db.GetCustomerFromId(1)!,
         //     ("first name", "FirstName"),
         //     ("last name", "LastName"),
