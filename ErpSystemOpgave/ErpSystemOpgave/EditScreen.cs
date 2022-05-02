@@ -1,3 +1,5 @@
+using ErpSystemOpgave.Data;
+
 namespace ErpSystemOpgave;
 
 
@@ -8,9 +10,9 @@ namespace ErpSystemOpgave;
 public class EditScreen<T>
 {
     private int SelectionIndex;
-    private List<IField> InputFields;
-    private T Record;
-    private string Title;
+    private readonly List<IField> InputFields;
+    private readonly T Record;
+    private readonly string Title;
     private T? ReturnValue;
 
     /// <summary>
@@ -37,7 +39,6 @@ public class EditScreen<T>
     /// </example>
     public EditScreen(string title, T record, params (string title, string property)[] props)
     {
-
         Title = title;
         InputFields = props.Select(p => new InputField(
             p.title,
@@ -49,20 +50,25 @@ public class EditScreen<T>
         System.Diagnostics.Debug.WriteLine($"Created edit screen with title: \"{title}\" for {record} with params: {props}");
     }
 
-    // TODO: `ExpandProp` and `GetProp` largely do the same. just merge them.
+    /// <summary>
+    /// Recursively "Expand" a property from name so it can be assigned to.
+    /// </summary>
+    /// <param name="target">T</param>
+    /// <param name="property"></param>
+    /// <returns></returns>
     private string ExpandProp(object target, string property)
     {
+        // TODO: `ExpandProp` and `GetProp` largely do the same. just merge them.
         string[] props = property.Split('.');
         if (target.GetType().GetProperty(props[0])?.GetValue(target) is object newTarget)
         {
-            return props.Length > 1
-            ? ExpandProp(newTarget, string.Join('.', props[1..]))
-            : newTarget.ToString()!;
+            if (props.Length > 1)
+            {
+                return ExpandProp(newTarget, string.Join('.', props[1..]));
+            }
+            return newTarget.ToString()!;
         }
-        else
-        {
-            throw new Exception("foo");
-        }
+        throw new Exception("foo");
     }
 
     private (object, string) GetProp(object target, string property)
@@ -86,17 +92,51 @@ public class EditScreen<T>
             {
                 System.Console.WriteLine("build prop: {0}", field.Property);
                 var (target, prop) = GetProp(Record!, field.Property);
-                target.GetType().GetProperty(prop)?.SetValue(target, field.Value);
+                var property = target.GetType().GetProperty(prop)!;
+                var type = property.GetType();
+                if (target is string _)
+                {
+                    property.SetValue(target, field.Value);
+                }
+                else if (target is int _)
+                {
+                    property.SetValue(target, (object)int.Parse(field.Value));
+                }
+                else if (target is double _)
+                {
+                    property.SetValue(target, (object)double.Parse(field.Value));
+                }
+                else if (target is decimal _)
+                {
+                    property.SetValue(target, (object)decimal.Parse(field.Value));
+                }
+                else if (target is ProductUnit _)
+                {
+                    property.SetValue(target, Enum.Parse(typeof(ProductUnit), field.Value));
+                }
+                else
+                {
+                    throw new Exception($"type not supported: {type}");
+                }
+
             }
         }
         return Record;
     }
 
+    /// <summary>
+    /// Start the "main loop" of the EditScreen.
+    /// Draw the screen and await user input, and loop until the user leaves the screen.
+    /// </summary>
+    /// <returns>
+    /// Either the modified `T` if terminated with "Ok". 
+    /// otherwise return the original record unchanged.
+    /// </returns>
     public T Show()
     {
+        ConsoleKeyInfo input = new();
         while (true)
         {
-            var input = Console.ReadKey();
             var field = InputFields[SelectionIndex];
             switch (input.Key)
             {
@@ -113,6 +153,7 @@ public class EditScreen<T>
             if (ReturnValue is not null)
                 return ReturnValue;
             Draw();
+            input = Console.ReadKey();
         }
     }
 
@@ -140,20 +181,28 @@ public class EditScreen<T>
     }
 }
 
-class ButtonField : IField
+public class ButtonField : IField
 {
     public ButtonField(string title, Action action)
     {
         Title = title;
         Action = action;
+        Indent = "";
+    }
+    public ButtonField(string title, Action action, string indent)
+    {
+        Title = title;
+        Action = action;
+        Indent = indent;
     }
 
     public string Title { get; }
     public Action Action { get; }
+    public string Indent { get; set; }
 
     public void Draw(bool focused)
     {
-        var (top, mid, bot, fill) = ("╔{0}╗", "║ {0} ║", "╚{0}╝", '═');
+        var (top, mid, bot, fill) = (Indent + "╔{0}╗", Indent + "║ {0} ║", Indent + "╚{0}╝", '═');
         if (focused)
         {
             Console.BackgroundColor = ConsoleColor.White;
@@ -222,7 +271,7 @@ class InputField : IField
     public string Value { get; set; }
 }
 
-interface IField
+public interface IField
 {
     public void Draw(bool focused);
     public void HandleInput(ConsoleKeyInfo input);

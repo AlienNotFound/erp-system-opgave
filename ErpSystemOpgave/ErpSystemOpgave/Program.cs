@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using ErpSystemOpgave.Data;
 using TECHCOOL.UI;
+
 namespace ErpSystemOpgave;
+using Data;
+using static System.Console;
+
 
 class Program
 {
@@ -13,6 +17,20 @@ class Program
         
         
         db.GetAllCustomers();
+
+        var lp = new LandingPage();
+        lp.Show();
+
+        // CustomerListScreen customerListScreen = new();
+        // Screen.Display(customerListScreen);
+        // var es = new EditScreen<Customer>("Edit Customer", db.GetCustomerFromId(1)!,
+        //     ("first name", "FirstName"),
+        //     ("last name", "LastName"),
+        //     ("Vej", "Address.Street"),
+        //     ("Nr.", "Address.HouseNumber"),
+        //     ("By", "Address.City"),
+        //     ("Phone", "ContactInfo.PhoneNumber"),
+        //     ("Mail", "ContactInfo.Email"));
 
         SalesOrderHearderScreen salesOrderHearderScreen = new SalesOrderHearderScreen();
         CreateSalesOrderScreen createSalesOrderScreen = new CreateSalesOrderScreen();
