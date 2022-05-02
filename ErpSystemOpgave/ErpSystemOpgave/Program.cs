@@ -10,11 +10,14 @@ class Program
     public static void Main(string[] args)
     {
         var db = DataBase.Instance;
+        
+        
         db.GetAllCustomers();
 
         SalesOrderHearderScreen salesOrderHearderScreen = new SalesOrderHearderScreen();
+        CreateSalesOrderScreen createSalesOrderScreen = new CreateSalesOrderScreen();
         //CustomerListScreen customerListScreen = new();
-        Screen.Display(salesOrderHearderScreen);
+        Screen.Display(createSalesOrderScreen);
     }
     public static void ShowMenu(params (String Description, Action Action)[] items)
     {

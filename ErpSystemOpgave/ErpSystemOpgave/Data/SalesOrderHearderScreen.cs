@@ -10,7 +10,7 @@ public class SalesOrderHearderScreen : Screen
 
     protected override void Draw()
     {
-        DataBase db = new DataBase();
+        DataBase db = DataBase.Instance;
         /*List<SalesOrderHeader> salesOrderHeaders = new List<SalesOrderHeader>();
         List<Customer> customers = new List<Customer>();*/
 

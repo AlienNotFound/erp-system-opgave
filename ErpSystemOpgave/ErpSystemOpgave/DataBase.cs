@@ -11,7 +11,14 @@ namespace ErpSystemOpgave
     public sealed class DataBase
     {
         static DataBase? _instance = null;
-        
+        private SqlConnection connection = null;
+
+        private DataBase()
+        {
+            string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+            connection = new SqlConnection(connectionString);
+            connection.Open();
+        }
         public static DataBase Instance
         {
             get
@@ -177,7 +184,31 @@ namespace ErpSystemOpgave
         ///////////////////////////////////////////////////////////////////////////
         /////////////         Products        /////////////////////////////////////
         ///////////////////////////////////////////////////////////////////////////
-
+        public Product GetProductById(int productId)
+        {
+            SqlDataReader dt;
+            SqlCommand cmd = connection.CreateCommand();
+            cmd.CommandText = "SELECT Id, [Name], [Description], SalePrice, BuyPrice, InStock, [Location], Unit, AvancePercent, AvanceKroner FROM products WHERE Id = @id";
+            cmd.Parameters.AddWithValue("@id", productId);
+            dt = cmd.ExecuteReader();
+            
+            Product product = new Product(0, "", "", 0, 0, 0, "", 0, 0, 0);
+            if(dt.Read())
+            {
+                product.ProductId = dt.GetInt32(0);
+                product.Name = dt.GetString(1);
+                product.Description = dt.GetString(2);
+                product.SalePrice = dt.GetDecimal(3);
+                product.BuyPrice = dt.GetDecimal(4);
+                product.InStock = dt.GetDouble(5);
+                product.Location = dt.GetString(6);
+                product.Unit = Enum.Parse<ProductUnit>(dt.GetString(7));
+                product.AvancePercent = dt.GetDecimal(8);
+                product.AvanceKroner = dt.GetDecimal(9);
+            }
+            connection.Close();
+            return product;
+        }
 
         ///////////////////////////////////////////////////////////////////////////
         /////////////         Orders          /////////////////////////////////////
