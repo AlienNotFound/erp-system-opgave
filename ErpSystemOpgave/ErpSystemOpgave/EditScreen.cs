@@ -1,3 +1,5 @@
+using ErpSystemOpgave.Data;
+
 namespace ErpSystemOpgave;
 
 
@@ -37,7 +39,6 @@ public class EditScreen<T>
     /// </example>
     public EditScreen(string title, T record, params (string title, string property)[] props)
     {
-
         Title = title;
         InputFields = props.Select(p => new InputField(
             p.title,
@@ -61,9 +62,11 @@ public class EditScreen<T>
         string[] props = property.Split('.');
         if (target.GetType().GetProperty(props[0])?.GetValue(target) is object newTarget)
         {
-            return props.Length > 1
-            ? ExpandProp(newTarget, string.Join('.', props[1..]))
-            : newTarget.ToString()!;
+            if (props.Length > 1)
+            {
+                return ExpandProp(newTarget, string.Join('.', props[1..]));
+            }
+            return newTarget.ToString()!;
         }
         throw new Exception("foo");
     }
@@ -89,7 +92,33 @@ public class EditScreen<T>
             {
                 System.Console.WriteLine("build prop: {0}", field.Property);
                 var (target, prop) = GetProp(Record!, field.Property);
-                target.GetType().GetProperty(prop)?.SetValue(target, field.Value);
+                var property = target.GetType().GetProperty(prop)!;
+                var type = property.GetType();
+                if (target is string _)
+                {
+                    property.SetValue(target, field.Value);
+                }
+                else if (target is int _)
+                {
+                    property.SetValue(target, (object)int.Parse(field.Value));
+                }
+                else if (target is double _)
+                {
+                    property.SetValue(target, (object)double.Parse(field.Value));
+                }
+                else if (target is decimal _)
+                {
+                    property.SetValue(target, (object)decimal.Parse(field.Value));
+                }
+                else if (target is ProductUnit _)
+                {
+                    property.SetValue(target, Enum.Parse(typeof(ProductUnit), field.Value));
+                }
+                else
+                {
+                    throw new Exception($"type not supported: {type}");
+                }
+
             }
         }
         return Record;
