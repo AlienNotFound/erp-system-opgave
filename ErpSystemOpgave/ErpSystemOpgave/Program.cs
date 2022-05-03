@@ -10,10 +10,27 @@ class Program
     public static void Main(string[] args)
     {
         var db = DataBase.Instance;
-        
-        CustomerListScreen customerListScreen = new CustomerListScreen();
-        ProductListScreen productListScreen = new ProductListScreen();
-        Screen.Display(productListScreen);
+
+        var lp = new LandingPage();
+        lp.Show();
+
+        // CustomerListScreen customerListScreen = new();
+        // Screen.Display(customerListScreen);
+        // var es = new EditScreen<Customer>("Edit Customer", db.GetCustomerFromId(1)!,
+        //     ("first name", "FirstName"),
+        //     ("last name", "LastName"),
+        //     ("Vej", "Address.Street"),
+        //     ("Nr.", "Address.HouseNumber"),
+        //     ("By", "Address.City"),
+        //     ("Phone", "ContactInfo.PhoneNumber"),
+        //     ("Mail", "ContactInfo.Email"));
+
+        // es.Show();
+        // WriteLine("done editting");
+        // WriteLine("first name: {0}", db.GetCustomerFromId(1)?.FirstName);
+        // WriteLine("last name: {0}", db.GetCustomerFromId(1)?.LastName);
+        // WriteLine("address: {0}", db.GetCustomerFromId(1)?.FullAddress);
+        // WriteLine("contactinfo: {0}", db.GetCustomerFromId(1)?.ContactInfo);
     }
     public static void ShowMenu(params (String Description, Action Action)[] items)
     {
@@ -32,6 +49,14 @@ class Program
         }
         return listPage;
     }
+
+    public static ListPage<DetailViewItem> CreateDetailsView<T>
+    (T record, params (string title, string property)[] items)
+    {
+        var rows = items.Select(i => new DetailViewItem(
+            i.title, typeof(T).GetProperty(i.property)?.GetValue(record)?.ToString() ?? ""));
+        return CreateListPageWith(rows, ("Egenskab", "Title"), ("Værdi", "Value"));
+    }
 }
 static class ListPageExtensions
 {
@@ -43,3 +68,4 @@ static class ListPageExtensions
 };
 
 record MenuItem(string Description, Action Action);
+record DetailViewItem(string Title, string Value);

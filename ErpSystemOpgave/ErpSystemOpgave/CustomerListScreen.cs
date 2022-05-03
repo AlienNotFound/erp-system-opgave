@@ -16,9 +16,18 @@ public class CustomerListScreen : Screen
             ("Kundenummer", "CustomerId"),
             ("Navn", "FullName"),
             ("Contact", "ContactInfo"));
-        
-        Console.WriteLine("\nTryk på ENTER på den valgte kunde, for at se detaljer\n");
+
+        Console.WriteLine("\nTryk på ENTER på den valgte kunde, for at se detaljer\nTryk F2 for at redigere kunde");
+        listPage.AddKey(ConsoleKey.F2, c =>
+        {
+            Clear();
+            Display(new CustomerUpdateScreen("Updater kunde", c.CustomerId));
+        });
+
         if (listPage.Select() is Customer selected)
-            Screen.Display(new CustomerDetailsScreen(selected.CustomerId));
+        {
+            Clear();
+            Display(new CustomerDetailsScreen(selected.CustomerId));
+        }
     }
 }

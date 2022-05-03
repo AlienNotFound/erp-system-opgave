@@ -1,17 +1,7 @@
 using System;
+using System.Data.SqlClient;
 
 namespace ErpSystemOpgave.Data;
-
-//eller som record:
-// public record Customer : Person
-// {
-//     public int CustomerId { get; set; }
-
-//     public Customer(string firstName, string lastName, Address address, ContactInfo contactInfo, int customerId) : base(firstName, lastName, address, contactInfo)
-//     {
-//         CustomerId = customerId;
-//     }
-// }
 
 public class Customer : Person
 {
@@ -24,4 +14,5 @@ public class Customer : Person
     {
         CustomerId = id;
     }
+
 }
