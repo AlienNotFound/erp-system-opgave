@@ -50,7 +50,6 @@ public class EditScreen<T>
         InputFields.Add(new ButtonField("Okay", () => ReturnValue = BuildReturn()));
         InputFields.Add(new ButtonField("Tilbage", () => Done = true));
         Record = record;
-        System.Diagnostics.Debug.WriteLine($"Created edit screen with title: \"{title}\" for {record} with params: {props}");
     }
 
     /// <summary>
@@ -93,34 +92,19 @@ public class EditScreen<T>
         {
             if (item is InputField field)
             {
-                System.Console.WriteLine("build prop: {0}", field.Property);
                 var (target, prop) = GetProp(Record!, field.Property);
                 var property = target.GetType().GetProperty(prop)!;
-                var type = property.GetType();
-                if (target is string _)
+                var newValue = property.GetValue(target) switch
                 {
-                    property.SetValue(target, field.Value);
-                }
-                else if (target is int _)
-                {
-                    property.SetValue(target, (object)int.Parse(field.Value));
-                }
-                else if (target is double _)
-                {
-                    property.SetValue(target, (object)double.Parse(field.Value));
-                }
-                else if (target is decimal _)
-                {
-                    property.SetValue(target, (object)decimal.Parse(field.Value));
-                }
-                else if (target is ProductUnit _)
-                {
-                    property.SetValue(target, Enum.Parse(typeof(ProductUnit), field.Value));
-                }
-                else
-                {
-                    throw new Exception($"type not supported: {type}");
-                }
+                    string => (object)field.Value,
+                    int => int.Parse(field.Value),
+                    double => double.Parse(field.Value),
+                    decimal => decimal.Parse(field.Value),
+                    ProductUnit => Enum.Parse<ProductUnit>(field.Value),
+                    OrderState => Enum.Parse<OrderState>(field.Value),
+                    _ => throw new Exception($"type not supported: {property.PropertyType}")
+                };
+                property.SetValue(target, newValue);
 
             }
         }
