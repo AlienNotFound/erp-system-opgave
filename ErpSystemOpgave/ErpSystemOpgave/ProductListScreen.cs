@@ -12,15 +12,6 @@ public class ProductListScreen : Screen
     {
         // TODO: Change to pull data from Products
         Clear(this);
-        try
-        {
-            var products = DataBase.Instance.GetAllProducts();
-            System.Console.WriteLine("products: {0}", products.Count());
-        }
-        catch
-        {
-            throw;
-        }
         var listPage = Program.CreateListPageWith(
             DataBase.Instance.GetAllProducts(),
             ("ID", "ProductId"),
@@ -54,13 +45,16 @@ public class ProductListScreen : Screen
         listPage.AddKey(ConsoleKey.F3, _ =>
         {
             Clear();
-            new EditScreen<Product>("Rediger Produkt", p,
+            if (new EditScreen<Product>("Tilføj Produkt", new Product(0, "", "", 0, 0, 0, "0000", ProductUnit.Quantity),
                 ("Navn", "Name"),
                 ("På lager", "InStock"),
                 ("Enhed", "Unit"),
                 ("Plads", "Location"),
                 ("Salgspris", "SalePrice"),
-                ("Købspris", "BuyPrice")).Show();
+                ("Købspris", "BuyPrice")).Show() is Product p)
+            {
+                DataBase.Instance.InsertProduct(p);
+            }
             // Display(new CustomerUpdateScreen("Updater produkt", c.ProductId));
         });
 
