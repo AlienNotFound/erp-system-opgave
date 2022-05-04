@@ -207,7 +207,7 @@ public sealed class DataBase
     public void InsertProduct(Product product)
     {
         using SqlConnection connection = new(CONNECTION_STRING);
-        using SqlCommand cmd = new("INSERT INTO products (name, description, instock, buyprice, saleprice, location, unit, avancepercent, avancekroner) VALUES (@name, @description, @instock, @buyprice, @saleprice, @location, @unit, @avancepercent, @avancekroner)", connection);
+        using SqlCommand cmd = new("INSERT INTO products (name, description, instock, buyprice, saleprice, location, unit) VALUES (@name, @description, @instock, @buyprice, @saleprice, @location, @unit)", connection);
         cmd.Connection.Open();
         cmd.Parameters.AddWithValue("@name", product.Name);
         cmd.Parameters.AddWithValue("@description", product.Description);
@@ -215,19 +215,17 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@buyprice", product.BuyPrice);
         cmd.Parameters.AddWithValue("@saleprice", product.SalePrice);
         cmd.Parameters.AddWithValue("@location", product.Location);
-        cmd.Parameters.AddWithValue("@unit", product.Unit);
-        cmd.Parameters.AddWithValue("@avancepercent", product.AvancePercent);
-        cmd.Parameters.AddWithValue("@avancekroner", product.AvanceKroner);
+        cmd.Parameters.AddWithValue("@unit", product.Unit.ToString());
         cmd.ExecuteNonQuery();
         Console.WriteLine("Data tilføjet");
         connection.Close();
     }
-    public void UpdateProduct(int id, string name, string description, decimal saleprice, decimal buyprice, double instock, string location, string unit, decimal avancepercent, decimal avancekroner)
+    public void UpdateProduct(int id, string name, string? description, decimal saleprice, decimal buyprice, double instock, string location, string unit, decimal avancepercent, decimal avancekroner)
     {
         string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
         SqlConnection connection = new SqlConnection(connectionString);
         connection.Open();
-        SqlCommand cmd = new("UPDATE products SET name = @name, description = @description, instock = @instock, buyprice = @buyprice, saleprice = @saleprice, location = @location, unit = @unit, avancepercent = @avancepercent, avancekroner = @avancepercent WHERE id = @id", connection);
+        SqlCommand cmd = new("UPDATE products SET name = @name, description = @description, instock = @instock, buyprice = @buyprice, saleprice = @saleprice, location = @location, unit = @unit WHERE id = @id", connection);
         cmd.Parameters.AddWithValue("@id", id);
         cmd.Parameters.AddWithValue("@name", name);
         cmd.Parameters.AddWithValue("@description", description);
@@ -236,8 +234,6 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@saleprice", saleprice);
         cmd.Parameters.AddWithValue("@location", location);
         cmd.Parameters.AddWithValue("@unit", unit);
-        cmd.Parameters.AddWithValue("@avancepercent", avancepercent);
-        cmd.Parameters.AddWithValue("@avancekroner", avancekroner);
         cmd.ExecuteNonQuery();
         Console.WriteLine("Data opdateret");
         connection.Close();

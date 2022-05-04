@@ -22,9 +22,9 @@ public class Product
                 reader.GetDecimal(4),
                 reader.GetDouble(5),
                 reader.GetString(6),
-                Enum.Parse<ProductUnit>(reader.GetString(7)),
-                reader.GetDecimal(8),
-                reader.GetDecimal(9)
+                Enum.Parse<ProductUnit>(reader.GetString(7))
+        // reader.GetDecimal(8),
+        // reader.GetDecimal(9)
         );
     }
 
@@ -36,9 +36,7 @@ public class Product
         decimal buyPrice,
         double inStock,
         string location,
-        ProductUnit unit,
-        decimal avancePercent,
-        decimal avanceKroner)
+        ProductUnit unit)
     {
         ProductId = productId;
         Name = name;
@@ -48,8 +46,6 @@ public class Product
         InStock = inStock;
         Location = location;
         Unit = unit;
-        AvancePercent = avancePercent;
-        AvanceKroner = avanceKroner;
     }
 
     public int ProductId { get; set; }
@@ -61,8 +57,8 @@ public class Product
     public string Location { get; set; } // What is this even? spec siger "*Lokation er nummer på 4 bogstaver/tal"
     public ProductUnit Unit { get; set; }
 
-    //TODO: these probably shouldn't have a backing field. we can just use a plain setter.
-    public decimal AvancePercent { get; set; }
-    public decimal AvanceKroner { get; set; }
+    //TODO: these probably shouldn't have a backing field. we can just use a plain getter.
+    public decimal AvancePercent => AvanceKroner / SalePrice * 100;
+    public decimal AvanceKroner => SalePrice - BuyPrice;
 }
 
