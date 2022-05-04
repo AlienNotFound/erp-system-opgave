@@ -14,12 +14,11 @@ class Program
     public static void Main(string[] args)
     {
         var db = DataBase.Instance;
-        
-        
-        db.GetAllCustomers();
+
+        /*db.GetAllCustomers();
 
         var lp = new LandingPage();
-        lp.Show();
+        lp.Show();*/
 
         // CustomerListScreen customerListScreen = new();
         // Screen.Display(customerListScreen);

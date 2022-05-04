@@ -14,14 +14,28 @@ public enum OrderState
 
 public class SalesOrderHeader
 {
-    public SalesOrderHeader(int orderNumber, int customerId, OrderState state, decimal price, DateTime creationTime)
+    public SalesOrderHeader(int orderNumber,
+        int customerId,
+        OrderState state,
+        decimal price,
+        DateTime creationTime,
+        string street,
+        string houseNumber,
+        string city,
+        short zipCode,
+        string country)
     {
         OrderNumber = orderNumber;
         CustomerId = customerId;
         State = state;
         Price = price;
         CreationTime = creationTime;
-        Customer = DataBase.Instance.GetCustomerFromId(customerId)!;
+        Customer = DataBase.Instance.GetCustomerById(customerId)!;
+        Street = street;
+        HouseNumber = houseNumber;
+        City = city;
+        ZipCode = zipCode;
+        Country = country;
         //CreationTime = DateTime.Now;
     }
 
@@ -32,7 +46,12 @@ public class SalesOrderHeader
     public Customer Customer { get; set; }
     public string CustomerName
     {
-        get { return Customer.FullName;} }
+        get { return Customer.FullName; } }
     public OrderState State { get; set; }
     public decimal Price { get; set; }
+    public string Street { get; set; }
+    public string HouseNumber { get; set; }
+    public string City { get; set; }
+    public short ZipCode { get; set; }
+    public string Country { get; set; }
 }

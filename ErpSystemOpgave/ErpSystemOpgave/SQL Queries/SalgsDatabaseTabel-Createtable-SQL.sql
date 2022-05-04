@@ -27,3 +27,17 @@ CREATE TABLE OrderLines (
 		REFERENCES SalesOrderHeaders (Id)
 )
 GO
+    
+    /* ALTERATIONS */
+ALTER TABLE SalesOrderHeaders
+    ADD Street VarChar(16),
+	HouseNumber VarChar(32),
+	City VarChar(32),
+	ZipCode SmallInt,
+	Country VarChar(32);
+
+ALTER TABLE SalesOrderHeaders
+    ADD CHECK (State IN ('None', 'Created', 'Confirmed', 'Packed'))
+
+ALTER TABLE OrderLines
+    DROP COLUMN TotalPrice, SalePrice
