@@ -62,8 +62,15 @@ static class ListPageExtensions
 {
     public static void AddColumnAligned<T>(this ListPage<T> listPage, string title, string property, IEnumerable<T> collection)
     {
-        listPage.AddColumn(title, property, Math.Max(collection.Max(item =>
-        String.Format("{0}", typeof(T).GetProperty(property)!.GetValue(item)).Length), title.Length) + 4);
+        try
+        {
+            listPage.AddColumn(title, property, Math.Max(collection.Max(item =>
+            String.Format("{0}", typeof(T).GetProperty(property)!.GetValue(item)).Length), title.Length) + 4);
+        }
+        catch
+        {
+            throw new Exception(String.Format("Could not add column {0} to listpage of {1}", property, typeof(T)));
+        }
     }
 };
 

@@ -12,7 +12,7 @@ using TECHCOOL.UI;
 public sealed class DataBase
 {
     static DataBase? _instance = null;
-    private const string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+    private const string CONNECTION_STRING = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
     private DataBase() { }
 
     public static DataBase Instance
@@ -180,93 +180,44 @@ public sealed class DataBase
     ////////////////////////////////////////////////////////////////////////////
     /////////////         Products        //////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////
+
     public IEnumerable<Product> GetAllProducts()
     {
-        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new SqlConnection(connectionString);
-        connection.Open();
-
-        SqlCommand cmd = new SqlCommand("SELECT * FROM Products", connection);
+        using SqlConnection connection = new(CONNECTION_STRING);
+        using SqlCommand cmd = new("SELECT * FROM Products", connection);
+        cmd.Connection.Open();
         var dt = cmd.ExecuteReader();
-        products.Clear();
-
-        try
-        {
-            while (dt.Read())
-            {
-                var unitType = dt["unit"].ToString();
-                products.Add(new Product(
-                    Convert.ToInt32(dt["id"]),
-                    dt["name"].ToString()!,
-                    dt["description"].ToString()!,
-                    Convert.ToDecimal(dt["saleprice"]),
-                    Convert.ToDecimal(dt["buyprice"]),
-                    Convert.ToInt32(dt["instock"]),
-                    dt["location"].ToString()!,
-                    Enum.Parse<ProductUnit>(unitType!),
-                    Convert.ToDecimal(dt["avancepercent"]),
-                    Convert.ToDecimal(dt["avancekroner"])
-                    ));
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-        connection.Close();
-        return products.GetRange(0, products.Count);
-    }
-    public void GetProductById(int productId)
-    {
-        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new SqlConnection(connectionString);
-        connection.Open();
-        SqlDataReader dt;
-        SqlCommand cmd = new SqlCommand("SELECT * FROM products WHERE ID = @id", connection);
-        cmd.Parameters.AddWithValue("@id", productId);
-        dt = cmd.ExecuteReader();
-        ListPage<ProductDetails> listPage = new ListPage<ProductDetails>();
+        List<Product> prods = new();
         while (dt.Read())
-        {
-            listPage.Add(new ProductDetails(
-                Convert.ToInt32(dt["id"]),
-                dt["name"].ToString()!,
-                dt["description"].ToString()!,
-                Convert.ToInt32(dt["instock"]),
-                Convert.ToDecimal(dt["buyprice"]),
-                Convert.ToDecimal(dt["saleprice"]),
-                dt["location"].ToString()!,
-                Convert.ToDecimal(dt["saleprice"]),
-                dt["unit"].ToString()!,
-                Convert.ToDouble(dt["avancepercent"]),
-                Convert.ToDouble(dt["avancekroner"])));
-        }
-        listPage.AddColumn("Varenr.", "ProductNumber");
-        listPage.AddColumn("Produktnavn", "Name");
-        listPage.AddColumn("Lagerantal", "StockUnits");
-        listPage.AddColumn("Købspris", "BuyPrice");
-        listPage.AddColumn("Salgspris", "SalesPrice");
-        listPage.AddColumn("Avance i procent", "AvancePercent");
-        listPage.AddColumn("Avance i kroner", "AvanceKroner");
-        listPage.Draw();
-        connection.Close();
+            prods.Add(Product.FromReader(dt));
+        return prods;
     }
-    public void InsertProduct(string name, string description, decimal saleprice, decimal buyprice, double instock, string location, string unit, decimal avancepercent, decimal avancekroner)
+    public Product? GetProductById(int productId)
     {
-        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new SqlConnection(connectionString);
-        connection.Open();
-        SqlCommand cmd = new SqlCommand("INSERT INTO products (name, description, instock, buyprice, saleprice, location, unit, avancepercent, avancekroner) VALUES (@name, @description, @instock, @buyprice, @saleprice, @location, @unit, @avancepercent, @avancekroner)", connection);
-        cmd.Parameters.AddWithValue("@name", name);
-        cmd.Parameters.AddWithValue("@description", description);
-        cmd.Parameters.AddWithValue("@instock", instock);
-        cmd.Parameters.AddWithValue("@buyprice", buyprice);
-        cmd.Parameters.AddWithValue("@saleprice", saleprice);
-        cmd.Parameters.AddWithValue("@location", location);
-        cmd.Parameters.AddWithValue("@unit", unit);
-        cmd.Parameters.AddWithValue("@avancepercent", avancepercent);
-        cmd.Parameters.AddWithValue("@avancekroner", avancekroner);
+        using var connection = new SqlConnection(CONNECTION_STRING);
+        using SqlCommand cmd = new("SELECT * FROM products WHERE ID = @id", connection);
+        cmd.Parameters.AddWithValue("@id", productId);
+        cmd.Connection.Open();
+        var dt = cmd.ExecuteReader();
+        if (dt.Read())
+            return Product.FromReader(dt);
+        return null;
+    }
+
+    public void InsertProduct(Product product)
+    {
+        using SqlConnection connection = new(CONNECTION_STRING);
+        using SqlCommand cmd = new("INSERT INTO products (name, description, instock, buyprice, saleprice, location, unit, avancepercent, avancekroner) VALUES (@name, @description, @instock, @buyprice, @saleprice, @location, @unit, @avancepercent, @avancekroner)", connection);
+        cmd.Connection.Open();
+        cmd.Parameters.AddWithValue("@name", product.Name);
+        cmd.Parameters.AddWithValue("@description", product.Description);
+        cmd.Parameters.AddWithValue("@instock", product.InStock);
+        cmd.Parameters.AddWithValue("@buyprice", product.BuyPrice);
+        cmd.Parameters.AddWithValue("@saleprice", product.SalePrice);
+        cmd.Parameters.AddWithValue("@location", product.Location);
+        cmd.Parameters.AddWithValue("@unit", product.Unit);
+        cmd.Parameters.AddWithValue("@avancepercent", product.AvancePercent);
+        cmd.Parameters.AddWithValue("@avancekroner", product.AvanceKroner);
         cmd.ExecuteNonQuery();
         Console.WriteLine("Data tilføjet");
         connection.Close();
@@ -276,7 +227,7 @@ public sealed class DataBase
         string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
         SqlConnection connection = new SqlConnection(connectionString);
         connection.Open();
-        SqlCommand cmd = new SqlCommand("UPDATE products SET name = @name, description = @description, instock = @instock, buyprice = @buyprice, saleprice = @saleprice, location = @location, unit = @unit, avancepercent = @avancepercent, avancekroner = @avancepercent WHERE id = @id", connection);
+        SqlCommand cmd = new("UPDATE products SET name = @name, description = @description, instock = @instock, buyprice = @buyprice, saleprice = @saleprice, location = @location, unit = @unit, avancepercent = @avancepercent, avancekroner = @avancepercent WHERE id = @id", connection);
         cmd.Parameters.AddWithValue("@id", id);
         cmd.Parameters.AddWithValue("@name", name);
         cmd.Parameters.AddWithValue("@description", description);

@@ -15,6 +15,9 @@ public class EditScreen<T>
     private readonly string Title;
     private T? ReturnValue;
 
+    // !! this is such an ugly hack. Simon says (heh) that I'm allowed to write shitty code.
+    private bool Done;
+
     /// <summary>
     /// Create a new EditScreen.
     /// </summary>
@@ -45,7 +48,7 @@ public class EditScreen<T>
             p.property,
             ExpandProp(record!, p.property)) as IField).ToList();
         InputFields.Add(new ButtonField("Okay", () => ReturnValue = BuildReturn()));
-        InputFields.Add(new ButtonField("Tilbage", () => ReturnValue = record));
+        InputFields.Add(new ButtonField("Tilbage", () => Done = true));
         Record = record;
         System.Diagnostics.Debug.WriteLine($"Created edit screen with title: \"{title}\" for {record} with params: {props}");
     }
@@ -121,6 +124,7 @@ public class EditScreen<T>
 
             }
         }
+        Done = true;
         return Record;
     }
 
@@ -132,7 +136,7 @@ public class EditScreen<T>
     /// Either the modified `T` if terminated with "Ok". 
     /// otherwise return the original record unchanged.
     /// </returns>
-    public T Show()
+    public T? Show()
     {
         ConsoleKeyInfo input = new();
         while (true)
@@ -150,7 +154,7 @@ public class EditScreen<T>
                     field.HandleInput(input);
                     break;
             }
-            if (ReturnValue is not null)
+            if (Done)
                 return ReturnValue;
             Draw();
             input = Console.ReadKey();
