@@ -93,26 +93,34 @@ public class EditScreen<T>
                 System.Console.WriteLine("build prop: {0}", field.Property);
                 var (target, prop) = GetProp(Record!, field.Property);
                 var property = target.GetType().GetProperty(prop)!;
-                var type = property.GetType();
-                if (target is string _)
+                var type = property.PropertyType;
+                if (type == typeof(string))
                 {
                     property.SetValue(target, field.Value);
                 }
-                else if (target is int _)
+                else if (type == typeof(int))
                 {
                     property.SetValue(target, (object)int.Parse(field.Value));
                 }
-                else if (target is double _)
+                else if (type == typeof(double))
                 {
                     property.SetValue(target, (object)double.Parse(field.Value));
                 }
-                else if (target is decimal _)
+                else if (type == typeof(decimal))
                 {
                     property.SetValue(target, (object)decimal.Parse(field.Value));
                 }
-                else if (target is ProductUnit _)
+                else if (type == typeof(ProductUnit))
                 {
                     property.SetValue(target, Enum.Parse(typeof(ProductUnit), field.Value));
+                }
+                else if (type == typeof(OrderState))
+                {
+                    property.SetValue(target, Enum.Parse(typeof(OrderState), field.Value));
+                }
+                else if (type == typeof(DateTime))
+                {
+                    property.SetValue(target, DateTime.Parse(field.Value));
                 }
                 else
                 {

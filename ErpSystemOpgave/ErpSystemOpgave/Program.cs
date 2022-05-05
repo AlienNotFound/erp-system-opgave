@@ -1,4 +1,8 @@
-﻿using TECHCOOL.UI;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using ErpSystemOpgave.Data;
+using TECHCOOL.UI;
 
 namespace ErpSystemOpgave;
 using Data;
@@ -11,8 +15,10 @@ class Program
     {
         var db = DataBase.Instance;
 
+        /*db.GetAllCustomers();
+
         var lp = new LandingPage();
-        lp.Show();
+        lp.Show();*/
 
         // CustomerListScreen customerListScreen = new();
         // Screen.Display(customerListScreen);
@@ -25,12 +31,10 @@ class Program
         //     ("Phone", "ContactInfo.PhoneNumber"),
         //     ("Mail", "ContactInfo.Email"));
 
-        // es.Show();
-        // WriteLine("done editting");
-        // WriteLine("first name: {0}", db.GetCustomerFromId(1)?.FirstName);
-        // WriteLine("last name: {0}", db.GetCustomerFromId(1)?.LastName);
-        // WriteLine("address: {0}", db.GetCustomerFromId(1)?.FullAddress);
-        // WriteLine("contactinfo: {0}", db.GetCustomerFromId(1)?.ContactInfo);
+        SalesOrderHearderScreen salesOrderHearderScreen = new SalesOrderHearderScreen();
+        CreateSalesOrderScreen createSalesOrderScreen = new CreateSalesOrderScreen();
+        //CustomerListScreen customerListScreen = new();
+        Screen.Display(createSalesOrderScreen);
     }
     public static void ShowMenu(params (String Description, Action Action)[] items)
     {

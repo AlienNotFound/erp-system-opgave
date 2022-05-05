@@ -11,7 +11,7 @@ public enum ProductUnit
 }
 public class Product
 {
-    public Product(int productId, string name, string? description, decimal salePrice, decimal buyPrice, double inStock, string location, ProductUnit unit)
+    public Product(int productId, string name, string? description, decimal salePrice, decimal buyPrice, double inStock, string location, ProductUnit unit, decimal avancePercent, decimal avanceKroner)
     {
         ProductId = productId;
         Name = name;
@@ -21,6 +21,8 @@ public class Product
         InStock = inStock;
         Location = location;
         Unit = unit;
+        AvancePercent = avancePercent;
+        AvanceKroner = avanceKroner;
     }
 
     public int ProductId { get; set; }
@@ -31,5 +33,9 @@ public class Product
     public double InStock { get; set; }
     public string Location { get; set; } // What is this even? spec siger "*Lokation er nummer på 4 bogstaver/tal"
     public ProductUnit Unit { get; set; } 
+    public decimal AvancePercent { get; set; }
+    public decimal AvanceKroner { get; set; }
+
+    
 }
 
