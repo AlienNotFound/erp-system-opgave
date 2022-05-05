@@ -10,15 +10,15 @@ public class LandingPage
     public LandingPage()
     {
         InputFields.Add(new ButtonField(
-            "Produkter/Lager".PadRight(30),
+            "Produkter/Lager".PadCenter(30),
             () => Screen.Display(new ProductListScreen()),
             "\t\t\t"));
         InputFields.Add(new ButtonField(
-            "Kunder".PadRight(30),
+            "Kunder".PadCenter(30),
             () => Screen.Display(new CustomerListScreen()),
             "\t\t\t"));
         InputFields.Add(new ButtonField(
-            "Salg".PadRight(30),
+            "Salg".PadCenter(30),
             () => Screen.Display(new ProductListScreen()),
             "\t\t\t"));
 
@@ -84,7 +84,7 @@ public class LandingPage
         Console.WriteLine(top, new string(fill, width));
         foreach (var line in tooltip.Split('\n'))
         {
-            Console.WriteLine(mid, line.PadRight(width - 2));
+            Console.WriteLine(mid, line.PadCenter(width - 2));
         }
         Console.WriteLine(bot, new string(fill, width));
         Console.ResetColor();

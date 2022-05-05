@@ -7,9 +7,7 @@ namespace ErpSystemOpgave;
 public class CustomerDetailsScreen : Screen
 {
     public int CustomerId = CustomerListScreen.SelectedId;
-
     public override string Title { get; set; } = "Kunde detaljer";
-
 
     public CustomerDetailsScreen(int customerId)
     {
