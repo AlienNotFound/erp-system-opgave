@@ -1,20 +1,26 @@
-﻿using System.Data.SqlClient;
+﻿using System.Data;
 
 namespace ErpSystemOpgave;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Data;
-using TECHCOOL.UI;
+using ErpSystemOpgave.Data;
 
 public sealed class DataBase
 {
     static DataBase? _instance = null;
-    private const string CONNECTION_STRING = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-    private DataBase() { }
+    private SqlConnection connection = null;
 
+    private DataBase()
+    {
+        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        connection = new SqlConnection(connectionString);
+        connection.Open();
+    }
     public static DataBase Instance
     {
         get
@@ -24,6 +30,7 @@ public sealed class DataBase
             return _instance;
         }
     }
+
     private List<Customer> customers = new();
     private List<Product> products = new();
     public List<SalesOrderHeader> salesOrderHeaders = new();
@@ -40,13 +47,15 @@ public sealed class DataBase
     /////////////         Customer        /////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
     public Customer? GetCustomerFromId(int customerId)
-        => customers.FirstOrDefault(c => c.CustomerId == customerId);
+            => customers.FirstOrDefault(c => c.CustomerId == customerId);
+
 
     // Hvis vi blot returnerede en reference til _customers, ville consumeren kunne ændre i listen.
     // Med GetRange() returnerer vi en kopi af indholdet i stedet.
     public IEnumerable<Customer> GetAllCustomers()
     {
-        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        string connectionString =
+            @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
         SqlConnection connection = new(connectionString);
         connection.Open();
 
@@ -81,6 +90,80 @@ public sealed class DataBase
         }
         connection.Close();
         return customers.GetRange(0, customers.Count);
+    }
+
+    public Address GetAddressById(int id)
+    {
+        if (connection.State == ConnectionState.Closed)
+            connection.Open();
+        SqlDataReader dt;
+        SqlCommand cmd = connection.CreateCommand();
+        cmd.CommandText = "SELECT Id, Street, HouseNumber, City, ZipCode, Country FROM Addresses WHERE Id = @id";
+        cmd.Parameters.AddWithValue("@id", id);
+        dt = cmd.ExecuteReader();
+
+        if (dt.Read())
+        {
+            var Street = dt.GetString(1);
+            var HouseNumber = dt.GetString(2);
+            var City = dt.GetString(3);
+            var ZipCode = dt.GetInt16(4);
+            var Country = dt.GetString(5);
+
+            Address address = new Address(Street, HouseNumber, City, ZipCode, Country);
+            connection.Close();
+            return address;
+        }
+        connection.Close();
+        return null;
+    }
+    public ContactInfo GetContactById(int id)
+    {
+        if (connection.State == ConnectionState.Closed)
+            connection.Open();
+        SqlDataReader dt;
+        SqlCommand cmd = connection.CreateCommand();
+        cmd.CommandText = "SELECT Id, PhoneNumber, Email FROM Contacts WHERE Id = @id";
+        cmd.Parameters.AddWithValue("@id", id);
+        dt = cmd.ExecuteReader();
+
+        if (dt.Read())
+        {
+            var PhoneNumber = dt.GetString(1);
+            var Email = dt.GetString(2);
+
+            ContactInfo contactInfo = new ContactInfo(PhoneNumber, Email);
+            connection.Close();
+            return contactInfo;
+        }
+        connection.Close();
+        return null;
+    }
+
+    public Customer? GetCustomerById(int customerId)
+    {
+        if (connection.State == ConnectionState.Closed)
+            connection.Open();
+        SqlDataReader dt;
+        SqlCommand cmd = connection.CreateCommand();
+        cmd.CommandText = "SELECT Id, FirstName, LastName, AddressId, ContactId FROM Customers WHERE Id = @id";
+        cmd.Parameters.AddWithValue("@id", customerId);
+        dt = cmd.ExecuteReader();
+
+        if (dt.Read())
+        {
+            var CustomerId = dt.GetInt32(0);
+            var FirstName = dt.GetString(1);
+            var LastName = dt.GetString(2);
+            var AddressId = dt.GetInt32(3);
+            var ContactId = dt.GetInt32(4);
+
+            connection.Close();
+            Customer customer = new Customer(FirstName, LastName, GetAddressById(AddressId), GetContactById(ContactId), CustomerId);
+            return customer;
+        }
+        connection.Close();
+        return null;
     }
 
     public void InsertCustomer(
@@ -171,7 +254,7 @@ public sealed class DataBase
         connection.Close();
     }
 
-    public void DeleteCustomerFromId(int customerId)
+    public void DeleteCustomerById(int customerId)
     {
         customers.RemoveAll(c => c.CustomerId == customerId);
     }
@@ -183,7 +266,7 @@ public sealed class DataBase
 
     public IEnumerable<Product> GetAllProducts()
     {
-        using SqlConnection connection = new(CONNECTION_STRING);
+        // using SqlConnection connection = new(CONNECTION_STRING);
         using SqlCommand cmd = new("SELECT * FROM Products", connection);
         cmd.Connection.Open();
         var dt = cmd.ExecuteReader();
@@ -194,7 +277,7 @@ public sealed class DataBase
     }
     public Product? GetProductById(int productId)
     {
-        using var connection = new SqlConnection(CONNECTION_STRING);
+        // using var connection = new SqlConnection(CONNECTION_STRING);
         using SqlCommand cmd = new("SELECT * FROM products WHERE ID = @id", connection);
         cmd.Parameters.AddWithValue("@id", productId);
         cmd.Connection.Open();
@@ -206,7 +289,7 @@ public sealed class DataBase
 
     public void InsertProduct(Product product)
     {
-        using SqlConnection connection = new(CONNECTION_STRING);
+        // using SqlConnection connection = new(CONNECTION_STRING);
         using SqlCommand cmd = new("INSERT INTO products (name, description, instock, buyprice, saleprice, location, unit) VALUES (@name, @description, @instock, @buyprice, @saleprice, @location, @unit)", connection);
         cmd.Connection.Open();
         cmd.Parameters.AddWithValue("@name", product.Name);
@@ -253,7 +336,90 @@ public sealed class DataBase
     ///////////////////////////////////////////////////////////////////////////
     /////////////         Orders          /////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
+    public void InsertSalesOrderHeader(int customerId, string state, DateTime creationTime)
+    {
+        if (connection.State == ConnectionState.Closed)
+            connection.Open();
+        // SqlDataReader dt;
+        SqlCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"INSERT INTO SalesOrderHeaders(CustomerId, State, PriceSum, Date)
+                                VALUES (@customerId, @state, 0, @date)
+                                UPDATE SalesOrderHeaders
+                                SET Street = a.Street,
+	                                HouseNumber = a.HouseNumber,
+	                                City = a.City,
+	                                ZipCode = a.ZipCode,
+	                                Country = a.Country
+                                FROM SalesOrderHeaders s
+                                INNER JOIN Customers c ON s.CustomerId = c.Id
+                                INNER JOIN Addresses a ON c.AddressId = a.Id
+                                WHERE s.Id = (SELECT TOP 1 Id FROM SalesOrderHeaders ORDER BY Id DESC)";
 
+        cmd.Parameters.AddWithValue("@customerId", customerId);
+        cmd.Parameters.AddWithValue("@state", state);
+        //cmd.Parameters.AddWithValue("@priceSum", priceSum);
+        cmd.Parameters.AddWithValue("@date", creationTime);
+
+        cmd.ExecuteReader();
+        connection.Close();
+    }
+
+    public IEnumerable<SalesOrderHeader> GetAllSalesOrderHeaders()
+    {
+        if (connection.State == ConnectionState.Closed)
+            connection.Open();
+        SqlDataReader dt;
+        SqlCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"SELECT * FROM SalesOrderHeaders
+                                INNER JOIN Customers ON Customers.Id = SalesOrderHeaders.CustomerId";
+        dt = cmd.ExecuteReader();
+        salesOrderHeaders.Clear();
+
+        try
+        {
+            SalesOrderHeader salesOrderHeader = new SalesOrderHeader(0, 0, 0, 0, DateTime.MinValue, "", "", "", 0, "");
+            if (dt.Read())
+            {
+                salesOrderHeader.CustomerId = dt.GetInt32(1);
+                salesOrderHeader.State = Enum.Parse<OrderState>(dt.GetString(2));
+                salesOrderHeader.Price = dt.GetDecimal(3);
+                salesOrderHeader.CreationTime = dt.GetDateTime(4);
+                salesOrderHeader.Street = dt.GetString(5);
+                salesOrderHeader.HouseNumber = dt.GetString(6);
+                salesOrderHeader.City = dt.GetString(7);
+                salesOrderHeader.ZipCode = dt.GetInt16(8);
+                salesOrderHeader.Country = dt.GetString(9);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+        connection.Close();
+        return salesOrderHeaders.GetRange(0, salesOrderHeaders.Count);
+    }
+    public void InsertOrderLine(int productId, int quantity)
+    {
+        if (connection.State == ConnectionState.Closed)
+            connection.Open();
+        SqlCommand cmd = connection.CreateCommand();
+
+        cmd.CommandText = @"INSERT INTO OrderLines (ProductId, Quantity, SalesOrderHeaderId)
+                                    VALUES (@productId, @quantity, (SELECT TOP 1 Id FROM SalesOrderHeaders ORDER BY Id DESC))
+                                UPDATE SalesOrderHeaders
+                                    SET PriceSum = p.SalePrice * o.Quantity
+                                    FROM SalesOrderHeaders s
+                                    INNER JOIN OrderLines o ON s.Id = o.SalesOrderHeaderId
+                                    INNER JOIN Products p ON o.ProductId = p.Id";
+
+        cmd.Parameters.AddWithValue("@productId", productId);
+        cmd.Parameters.AddWithValue("@quantity", quantity);
+
+        cmd.ExecuteReader();
+        connection.Close();
+    }
     public void UpdateSalesOrder(int orderNumber, int customerId, decimal price)
     {
         var result = from s in salesOrderHeaders
@@ -304,10 +470,5 @@ public sealed class DataBase
                                                + " Oprettet: " + salesOrderHeaders[i].CreationTime
             );
         }
-    }
-
-    public void CreateSalesOrder(int orderNumber, int customerId, decimal price)
-    {
-        salesOrderHeaders.Add(new SalesOrderHeader(orderNumber, customerId, OrderState.Created, price, new List<SalesOrderLine>()));
     }
 }

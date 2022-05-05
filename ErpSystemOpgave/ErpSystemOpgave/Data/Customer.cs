@@ -3,9 +3,22 @@ using System.Data.SqlClient;
 
 namespace ErpSystemOpgave.Data;
 
+//eller som record:
+// public record Customer : Person
+// {
+//     public int CustomerId { get; set; }
+
+//     public Customer(string firstName, string lastName, Address address, ContactInfo contactInfo, int customerId) : base(firstName, lastName, address, contactInfo)
+//     {
+//         CustomerId = customerId;
+//     }
+// }
+
 public class Customer : Person
 {
     public int CustomerId { get; set; }
+    public string FullName { get; set; }
+    public string FullAddress { get; set; }
     public DateTime? LastPurchase { get; set; }
 
 
@@ -13,6 +26,7 @@ public class Customer : Person
         : base(firstName, lastName, address, contactInfo)
     {
         CustomerId = id;
+        FullName = $"{FirstName} {LastName}";
+        FullAddress = $"{Address.Street}, {Address.ZipCode} {Address.City}";
     }
-
 }

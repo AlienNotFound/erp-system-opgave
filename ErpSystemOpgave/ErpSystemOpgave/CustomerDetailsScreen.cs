@@ -1,4 +1,5 @@
-﻿using ErpSystemOpgave.Data;
+﻿using System;
+using ErpSystemOpgave.Data;
 using TECHCOOL.UI;
 
 namespace ErpSystemOpgave;
