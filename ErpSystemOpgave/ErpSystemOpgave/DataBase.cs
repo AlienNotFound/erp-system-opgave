@@ -306,22 +306,12 @@ public sealed class DataBase
     }
     public void DeleteProduct(int id)
     {
-<<<<<<< HEAD
         // string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
         // SqlConnection connection = new SqlConnection(connectionString);
-=======
-        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new SqlConnection(connectionString);
-        // connection.Open();
->>>>>>> 9e799f6803b4fa8fbb0bf31a187ef76f46d9f959
         SqlCommand cmd = new SqlCommand("DELETE FROM products WHERE id = @id", connection);
         cmd.Parameters.AddWithValue("@id", id);
         cmd.ExecuteNonQuery();
         Console.WriteLine("Data slettet");
-<<<<<<< HEAD
-=======
-        // connection.Close();
->>>>>>> 9e799f6803b4fa8fbb0bf31a187ef76f46d9f959
     }
 
     ///////////////////////////////////////////////////////////////////////////
