@@ -13,7 +13,7 @@ using ErpSystemOpgave.Data;
 public sealed class DataBase
 {
     static DataBase? _instance = null;
-    private SqlConnection connection = null;
+    private SqlConnection connection;
 
     private DataBase()
     {
@@ -54,9 +54,9 @@ public sealed class DataBase
     // Med GetRange() returnerer vi en kopi af indholdet i stedet.
     public IEnumerable<Customer> GetAllCustomers()
     {
-        string connectionString =
-            @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new(connectionString);
+        // string connectionString =
+        //     @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        // SqlConnection connection = new(connectionString);
         // connection.Open();
 
         SqlCommand cmd = new(@"SELECT * FROM Customers
@@ -172,8 +172,8 @@ public sealed class DataBase
         string phoneNumber,
         string email)
     {
-        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new(connectionString);
+        // string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        // SqlConnection connection = new(connectionString);
 
         SqlCommand cmd = new(@"INSERT INTO Addresses(Street, HouseNumber, City, ZipCode, Country)
                                                      VALUES (@street, @houseNumber, @city, @zipCode, @country)
@@ -206,8 +206,8 @@ public sealed class DataBase
         string phoneNumber,
         string email)
     {
-        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new(connectionString);
+        // string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        // SqlConnection connection = new(connectionString);
 
         SqlCommand cmd = new(@"UPDATE Customers SET
                                                     FirstName = @firstName,
@@ -288,9 +288,9 @@ public sealed class DataBase
     }
     public void UpdateProduct(int id, string name, string? description, decimal saleprice, decimal buyprice, double instock, string location, string unit, decimal avancepercent, decimal avancekroner)
     {
-        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new SqlConnection(connectionString);
-        connection.Open();
+        // string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        // SqlConnection connection = new SqlConnection(connectionString);
+        // connection.Open();
         SqlCommand cmd = new("UPDATE products SET name = @name, description = @description, instock = @instock, buyprice = @buyprice, saleprice = @saleprice, location = @location, unit = @unit WHERE id = @id", connection);
         cmd.Parameters.AddWithValue("@id", id);
         cmd.Parameters.AddWithValue("@name", name);
@@ -306,8 +306,8 @@ public sealed class DataBase
     }
     public void DeleteProduct(int id)
     {
-        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new SqlConnection(connectionString);
+        // string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        // SqlConnection connection = new SqlConnection(connectionString);
         SqlCommand cmd = new SqlCommand("DELETE FROM products WHERE id = @id", connection);
         cmd.Parameters.AddWithValue("@id", id);
         cmd.ExecuteNonQuery();
