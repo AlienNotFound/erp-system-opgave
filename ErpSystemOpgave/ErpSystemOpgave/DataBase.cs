@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 
 namespace ErpSystemOpgave;
 using System;
@@ -32,6 +32,7 @@ public sealed class DataBase
     }
 
     private List<Customer> customers = new();
+    private List<Product> products = new();
     public List<SalesOrderHeader> salesOrderHeaders = new();
 
     //HACK: Dette er blot for at simulere en IDENTITY på Customer mens vi ikke har en database
@@ -47,6 +48,7 @@ public sealed class DataBase
     ///////////////////////////////////////////////////////////////////////////
     public Customer? GetCustomerFromId(int customerId)
             => customers.FirstOrDefault(c => c.CustomerId == customerId);
+
 
     // Hvis vi blot returnerede en reference til _customers, ville consumeren kunne ændre i listen.
     // Med GetRange() returnerer vi en kopi af indholdet i stedet.
@@ -65,7 +67,7 @@ public sealed class DataBase
 
         try
         {
-            while(dt.Read())
+            while (dt.Read()) //TODO: Unit test at den finder data og kolonner
             {
                 customers.Add(new Customer(
                     dt["FirstName"].ToString()!,
@@ -259,32 +261,78 @@ public sealed class DataBase
         customers.RemoveAll(c => c.CustomerId == customerId);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    /////////////         Products        /////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////////
-    public Product GetProductById(int productId)
+
+    ////////////////////////////////////////////////////////////////////////////
+    /////////////         Products        //////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+
+    public IEnumerable<Product> GetAllProducts()
     {
-        connection.Open();
-        SqlDataReader dt;
-        SqlCommand cmd = connection.CreateCommand();
-        cmd.CommandText = "SELECT Id, [Name], [Description], SalePrice, BuyPrice, InStock, [Location], Unit FROM products WHERE Id = @id";
+        // using SqlConnection connection = new(CONNECTION_STRING);
+        using SqlCommand cmd = new("SELECT * FROM Products", connection);
+        cmd.Connection.Open();
+        var dt = cmd.ExecuteReader();
+        List<Product> prods = new();
+        while (dt.Read())
+            prods.Add(Product.FromReader(dt));
+        return prods;
+    }
+    public Product? GetProductById(int productId)
+    {
+        // using var connection = new SqlConnection(CONNECTION_STRING);
+        using SqlCommand cmd = new("SELECT * FROM products WHERE ID = @id", connection);
         cmd.Parameters.AddWithValue("@id", productId);
-        dt = cmd.ExecuteReader();
-        
-        Product product = new Product(0, "", "", 0, 0, 0, "", 0, 0, 0);
-        if(dt.Read())
-        {
-            product.ProductId = dt.GetInt32(0);
-            product.Name = dt.GetString(1);
-            product.Description = dt.GetString(2);
-            product.SalePrice = dt.GetDecimal(3);
-            product.BuyPrice = dt.GetDecimal(4);
-            product.InStock = dt.GetDouble(5);
-            product.Location = dt.GetString(6);
-            product.Unit = Enum.Parse<ProductUnit>(dt.GetString(7));
-        }
+        cmd.Connection.Open();
+        var dt = cmd.ExecuteReader();
+        if (dt.Read())
+            return Product.FromReader(dt);
+        return null;
+    }
+
+    public void InsertProduct(Product product)
+    {
+        // using SqlConnection connection = new(CONNECTION_STRING);
+        using SqlCommand cmd = new("INSERT INTO products (name, description, instock, buyprice, saleprice, location, unit) VALUES (@name, @description, @instock, @buyprice, @saleprice, @location, @unit)", connection);
+        cmd.Connection.Open();
+        cmd.Parameters.AddWithValue("@name", product.Name);
+        cmd.Parameters.AddWithValue("@description", product.Description);
+        cmd.Parameters.AddWithValue("@instock", product.InStock);
+        cmd.Parameters.AddWithValue("@buyprice", product.BuyPrice);
+        cmd.Parameters.AddWithValue("@saleprice", product.SalePrice);
+        cmd.Parameters.AddWithValue("@location", product.Location);
+        cmd.Parameters.AddWithValue("@unit", product.Unit.ToString());
+        cmd.ExecuteNonQuery();
+        Console.WriteLine("Data tilføjet");
         connection.Close();
-        return product;
+    }
+    public void UpdateProduct(int id, string name, string? description, decimal saleprice, decimal buyprice, double instock, string location, string unit, decimal avancepercent, decimal avancekroner)
+    {
+        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+        SqlCommand cmd = new("UPDATE products SET name = @name, description = @description, instock = @instock, buyprice = @buyprice, saleprice = @saleprice, location = @location, unit = @unit WHERE id = @id", connection);
+        cmd.Parameters.AddWithValue("@id", id);
+        cmd.Parameters.AddWithValue("@name", name);
+        cmd.Parameters.AddWithValue("@description", description);
+        cmd.Parameters.AddWithValue("@instock", instock);
+        cmd.Parameters.AddWithValue("@buyprice", buyprice);
+        cmd.Parameters.AddWithValue("@saleprice", saleprice);
+        cmd.Parameters.AddWithValue("@location", location);
+        cmd.Parameters.AddWithValue("@unit", unit);
+        cmd.ExecuteNonQuery();
+        Console.WriteLine("Data opdateret");
+        connection.Close();
+    }
+    public void DeleteProduct(int id)
+    {
+        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        SqlConnection connection = new SqlConnection(connectionString);
+        connection.Open();
+        SqlCommand cmd = new SqlCommand("DELETE FROM products WHERE id = @id", connection);
+        cmd.Parameters.AddWithValue("@id", id);
+        cmd.ExecuteNonQuery();
+        Console.WriteLine("Data slettet");
+        connection.Close();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -294,7 +342,7 @@ public sealed class DataBase
     {
         if (connection.State == ConnectionState.Closed)
             connection.Open();
-        SqlDataReader dt;
+        // SqlDataReader dt;
         SqlCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"INSERT INTO SalesOrderHeaders(CustomerId, State, PriceSum, Date)
                                 VALUES (@customerId, @state, 0, @date)

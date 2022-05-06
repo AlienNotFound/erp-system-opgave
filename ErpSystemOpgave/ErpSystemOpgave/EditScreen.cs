@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Reflection;
+using System.Text;
 using ErpSystemOpgave.Data;
 
 namespace ErpSystemOpgave;
@@ -15,6 +18,9 @@ public class EditScreen<T>
     private readonly string Title;
     private T? ReturnValue;
 
+    // !! this is such an ugly hack. Simon says (heh) that I'm allowed to write shitty code.
+    private bool Done;
+
     /// <summary>
     /// Create a new EditScreen.
     /// </summary>
@@ -26,114 +32,43 @@ public class EditScreen<T>
     /// </param>
     /// <example>
     ///     <code>
-    ///     var editScreen = new EditScreen<Customer>("Edit Customer", db.GetCustomerFromId(1)!,
-    ///     ("first name", "FirstName"),
-    ///     ("last name", "LastName"),
-    ///     ("Vej", "Address.Street"),
-    ///     ("Nr.", "Address.HouseNumber"),
-    ///     ("By", "Address.City"),
-    ///     ("Phone", "ContactInfo.PhoneNumber"),
-    ///     ("Mail", "ContactInfo.Email"));
-    ///     editScreen.Show();
+    ///     var updatedCustomer = new EditScreen<Customer>("Edit Customer", db.GetCustomerFromId(1)!,
+    ///         ("first name", "FirstName"),
+    ///         ("last name", "LastName"),
+    ///         ("Vej", "Address.Street"),
+    ///         ("Nr.", "Address.HouseNumber"),
+    ///         ("By", "Address.City"),
+    ///         ("Phone", "ContactInfo.PhoneNumber"),
+    ///         ("Mail", "ContactInfo.Email")).Show();
+    ///     if(updatedCustomer is not null)
+    ///         db.UpdateCustomer(updatedCustomer);
     ///     </code>
     /// </example>
     public EditScreen(string title, T record, params (string title, string property)[] props)
     {
         Title = title;
-        InputFields = props.Select(p => new InputField(
-            p.title,
-            p.property,
-            ExpandProp(record!, p.property)) as IField).ToList();
-        InputFields.Add(new ButtonField("Okay", () => ReturnValue = BuildReturn()));
-        InputFields.Add(new ButtonField("Tilbage", () => ReturnValue = record));
+        InputFields = props.Select(p =>
+        {
+            var (target, prop) = Utility.GetProp(record!, p.property);
+            PropertyInfo property = target.GetType().GetProperty(prop)!;
+            var val = property.GetValue(target)!;
+            if (val is Enum u)
+                return CarouselWrapper.Create(p.title, p.property, u);
+            return new InputField(
+               p.title,
+               p.property,
+               val.ToString()!) as IField;
+        }).ToList();
+        InputFields.Add(new ButtonField("Okay", () =>
+        {
+            foreach (var item in InputFields)
+                if (item is IInput e)
+                    e.UpdateProperty(Record!);
+            ReturnValue = Record;
+            Done = true;
+        }));
+        InputFields.Add(new ButtonField("Tilbage", () => { Done = true; }));
         Record = record;
-        System.Diagnostics.Debug.WriteLine($"Created edit screen with title: \"{title}\" for {record} with params: {props}");
-    }
-
-    /// <summary>
-    /// Recursively "Expand" a property from name so it can be assigned to.
-    /// </summary>
-    /// <param name="target">T</param>
-    /// <param name="property"></param>
-    /// <returns></returns>
-    private string ExpandProp(object target, string property)
-    {
-        // TODO: `ExpandProp` and `GetProp` largely do the same. just merge them.
-        string[] props = property.Split('.');
-        if (target.GetType().GetProperty(props[0])?.GetValue(target) is object newTarget)
-        {
-            if (props.Length > 1)
-            {
-                return ExpandProp(newTarget, string.Join('.', props[1..]));
-            }
-            return newTarget.ToString()!;
-        }
-        throw new Exception("foo");
-    }
-
-    private (object, string) GetProp(object target, string property)
-    {
-        string[] props = property.Split('.');
-        if (props.Length == 1)
-            return (target, property);
-
-        if (target.GetType().GetProperty(props[0])?.GetValue(target) is object newTarget)
-        {
-            return GetProp(newTarget, string.Join('.', props[1..]));
-        }
-        throw new Exception("Looks like you fucked up");
-    }
-
-    private T BuildReturn()
-    {
-        foreach (var item in InputFields)
-        {
-            if (item is InputField field)
-            {
-                System.Console.WriteLine("build prop: {0}", field.Property);
-                var (target, prop) = GetProp(Record!, field.Property);
-                var property = target.GetType().GetProperty(prop)!;
-                var type = property.PropertyType;
-                if (type == typeof(string))
-                {
-                    property.SetValue(target, field.Value);
-                }
-                else if (type == typeof(int))
-                {
-                    property.SetValue(target, (object)int.Parse(field.Value));
-                }
-                else if (type == typeof(double))
-                {
-                    property.SetValue(target, (object)double.Parse(field.Value));
-                }
-                else if (type == typeof(decimal))
-                {
-                    property.SetValue(target, (object)decimal.Parse(field.Value));
-                }
-                else if (type == typeof(ProductUnit))
-                {
-                    property.SetValue(target, Enum.Parse(typeof(ProductUnit), field.Value));
-                }
-                else if (type == typeof(OrderState))
-                {
-                    property.SetValue(target, Enum.Parse(typeof(OrderState), field.Value));
-                }
-                else if (type == typeof(DateTime))
-                {
-                    property.SetValue(target, DateTime.Parse(field.Value));
-                }
-                else if (type == typeof(Int16))
-                {
-                    property.SetValue(target, Int16.Parse(field.Value));
-                }
-                else
-                {
-                    throw new Exception($"type not supported: {type}");
-                }
-
-            }
-        }
-        return Record;
     }
 
     /// <summary>
@@ -144,7 +79,7 @@ public class EditScreen<T>
     /// Either the modified `T` if terminated with "Ok". 
     /// otherwise return the original record unchanged.
     /// </returns>
-    public T Show()
+    public T? Show()
     {
         ConsoleKeyInfo input = new();
         while (true)
@@ -153,24 +88,23 @@ public class EditScreen<T>
             switch (input.Key)
             {
                 case ConsoleKey.DownArrow:
-                    SelectionIndex = Mod(SelectionIndex + 1, InputFields.Count);
+                    SelectionIndex.Rotate(1, InputFields.Count);
                     break;
                 case ConsoleKey.UpArrow:
-                    SelectionIndex = Mod(SelectionIndex - 1, InputFields.Count);
+                    SelectionIndex.Rotate(-1, InputFields.Count);
                     break;
                 default:
                     field.HandleInput(input);
                     break;
             }
-            if (ReturnValue is not null)
-                return ReturnValue;
+            if (Done)
+                break;
             Draw();
             input = Console.ReadKey();
         }
+        Console.Clear();
+        return ReturnValue;
     }
-
-    private int Mod(int a, int b) => (a % b + b) % b;
-
 
     private void Draw()
     {
@@ -178,18 +112,10 @@ public class EditScreen<T>
         System.Console.WriteLine(Title);
         System.Console.WriteLine("");
         foreach (var (item, i) in InputFields.Select((p, i) => (p, i)))
-        {
             item.Draw(i == SelectionIndex);
-        }
         if (InputFields[SelectionIndex] is InputField field)
-        {
-            Console.CursorVisible = true;
             Console.SetCursorPosition(field.Value.Length + 2, SelectionIndex * 3 + 3);
-        }
-        else
-        {
-            Console.CursorVisible = false;
-        }
+        Console.CursorVisible = InputFields[SelectionIndex] is InputField;
     }
 }
 
@@ -214,7 +140,7 @@ public class ButtonField : IField
 
     public void Draw(bool focused)
     {
-        var (top, mid, bot, fill) = (Indent + "╔{0}╗", Indent + "║ {0} ║", Indent + "╚{0}╝", '═');
+        var (top, mid, bot, fill) = !focused ? (Indent + "╔{0}╗", Indent + "║ {0} ║", Indent + "╚{0}╝", '═') : (Indent + " {0} ", Indent + "  {0}  ", Indent + " {0} ", ' ');
         if (focused)
         {
             Console.BackgroundColor = ConsoleColor.White;
@@ -239,7 +165,7 @@ public class ButtonField : IField
     }
 }
 
-class InputField : IField
+class InputField : IField, IInput
 {
     public InputField(string Title, string Property, string Value)
     {
@@ -278,13 +204,189 @@ class InputField : IField
         }
     }
 
+    public void UpdateProperty(object obj)
+    {
+        var (target, prop) = Utility.GetProp(obj, Property);
+        var property = target.GetType().GetProperty(prop)!;
+        object newValue = property.GetValue(target) switch
+        {
+            string => Value,
+            int => int.Parse(Value),
+            double => double.Parse(Value),
+            decimal => decimal.Parse(Value),
+            _ => throw new Exception($"type not supported: {property.PropertyType}")
+        };
+        property.SetValue(target, newValue);
+    }
+
     public string Title { get; }
     public string Property { get; }
     public string Value { get; set; }
+    object IInput.Value { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    string IInput.Property { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 }
+
+/// <summary>
+/// Little hack here. Since you don't get generic type inference on object instantiation, 
+/// a Carousel<T> cannot be directly constructed from a reflected type.
+/// As a workaround we use a "factory" with a static method which *is* subject to type inference.
+/// 
+/// Btw. did I ever mention how much I hate reflection?
+/// </summary>
+class CarouselWrapper
+{
+    public static Carousel<TWrap> Create<TWrap>(string title, string property, TWrap value)
+    where TWrap : notnull, Enum
+        => new(title, property, value);
+}
+
+class Carousel<T> : IField, IInput
+where T : notnull, Enum
+{
+    public string Title { get; }
+    public string Property { get; set; }
+    public T Value { get; set; }
+    object IInput.Value { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+    private string[] variants;
+    private int index;
+    private int offset;
+    private int cLeft, cTop;
+
+
+    public Carousel(string title, string property, T value)
+    {
+        Title = title;
+        Property = property;
+        Value = value;
+        variants = Enum.GetNames(value.GetType());
+        index = Convert.ToInt32(Value);
+    }
+
+    public void Draw(bool focused)
+    {
+        (cLeft, cTop) = Console.GetCursorPosition();
+
+        var (top, mid, bot, fill) = focused
+        ? ("╔{0}╗", "║{0}║", "╚{0}╝", '═')
+        : ("┌{0}┐", "│{0}│", "└{0}┘", '─');
+
+        var t = string.Format("\x1b[4;34m{0}\x1b[0m", Title);
+        var v = string.Join("", Enumerable
+            .Range(0, 9)
+            .Select(i => variants[(i + index).Mod(variants.Length)].PadCenter(14)))
+            .Substring(14 + offset, 14 * 7)
+            .PadCenter(98)
+            .Insert(0, "\x1b[0m\x1b[2;37m")
+            .Insert(25, "\x1b[0m\x1b[2;34m")
+            .Insert(25 * 2, "\x1b[0m\x1b[0;34m")
+            .Insert(25 * 3, "\x1b[0m \x1b[4;34m")
+            .Insert(25 * 4 + 1, "\x1b[0m \x1b[0;34m")
+            .Insert(25 * 5 + 2, "\x1b[0m\x1b[2;34m")
+            .Insert(25 * 6 + 2, "\x1b[0m\x1b[2;37m")
+            .Insert(25 * 7 + 2, "\x1b[0m");
+        if (focused)
+        {
+            var sb = new StringBuilder(v);
+            sb[25 * 3 + 4] = '«';
+            sb[25 * 4 + 5] = '»';
+            v = sb.ToString();
+        }
+        Console.WriteLine(top, t.PadRight(111, fill));
+        Console.WriteLine(mid, v);
+        Console.WriteLine(bot, new string(fill, 100));
+    }
+
+    public void HandleInput(ConsoleKeyInfo input)
+    {
+        switch (input.Key)
+        {
+            case ConsoleKey.LeftArrow:
+                AnimateOffset(-14, 300.0f, Utility.EaseOutCube);
+                index.Rotate(-1, variants.Length);
+                break;
+            case ConsoleKey.RightArrow:
+                AnimateOffset(14, 300f, Utility.EaseOutCube);
+                index.Rotate(1, variants.Length);
+                break;
+        }
+    }
+    private void AnimateOffset(int distance, float duration, Func<float, float> easingFunction)
+    {
+        double anim;
+        var timer = new Stopwatch();
+        timer.Start();
+        while (offset != distance)
+        {
+            anim = easingFunction(timer.ElapsedMilliseconds / duration) * distance;
+            if (MathF.Abs((float)anim) > MathF.Abs(offset))
+            {
+                Console.SetCursorPosition(cLeft, cTop);
+                offset = (int)anim;
+                Draw(true);
+            }
+        }
+        offset = 0;
+
+    }
+
+    public void UpdateProperty(object obj)
+    {
+        var (target, prop) = Utility.GetProp(obj, Property);
+        var property = target.GetType().GetProperty(prop)!;
+        Value = (T)Enum.Parse(Value.GetType(), variants[index]);
+        property.SetValue(target, Value);
+    }
+
+}
+
 
 public interface IField
 {
     public void Draw(bool focused);
     public void HandleInput(ConsoleKeyInfo input);
+}
+
+public interface IInput
+{
+    public object Value { get; set; }
+    public string Property { get; set; }
+    public void UpdateProperty(object target);
+}
+
+public static class Utility
+{
+    public static float EaseOutCube(float x) => 1 - MathF.Pow(1 - x, 3.0f);
+    public static float EaseOutQuad(float x) => 1 - MathF.Pow(1 - x, 2.0f);
+
+    public static (object, string) GetProp(object target, string property)
+    {
+        string[] props = property.Split('.');
+        if (props.Length == 1)
+            return (target, property);
+
+        if (target.GetType().GetProperty(props[0])?.GetValue(target) is object newTarget)
+        {
+            return GetProp(newTarget, string.Join('.', props[1..]));
+        }
+        throw new Exception("Looks like you fucked up");
+    }
+
+    public static int Mod(this int self, int mod)
+    {
+        return (self % mod + mod) % mod;
+    }
+    public static void Rotate(this ref int self, int increase, int max)
+    {
+        self += increase;
+        self = (self % max + max) % max;
+    }
+    public static string PadCenter(this string self, int width)
+    {
+        return self.PadLeft(width - ((width - self.Length) / 2)).PadRight(width);
+    }
+    public static string PadCenter(this string self, int width, char fill)
+    {
+        return self.PadLeft(width - ((width - self.Length) / 2), fill).PadRight(width, fill);
+    }
 }
