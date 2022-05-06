@@ -185,10 +185,10 @@ public sealed class DataBase
                                                      VALUES (@street, @houseNumber, @city, @zipCode, @country)
                                                      INSERT INTO Contacts(PhoneNumber, Email)
                                                      VALUES (@phoneNumber, @email)
-                                                     INSERT INTO Customers( FirstName, LastName, AddressId, ContactID)
+                                                     INSERT INTO Customers( FirstName, LastName, AddressId, ContactID, LastPurchase)
                                                      VALUES (@firstName, @lastName, 
                                                          (SELECT TOP 1 Id FROM Addresses ORDER BY Id DESC),
-                                                         (SELECT TOP 1 Id FROM Contacts ORDER BY Id DESC))", connection);
+                                                         (SELECT TOP 1 Id FROM Contacts ORDER BY Id DESC), GETDATE())", connection);
         cmd.Parameters.AddWithValue("@street", street);
         cmd.Parameters.AddWithValue("@houseNumber", houseNumber);
         cmd.Parameters.AddWithValue("@city", city);

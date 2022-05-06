@@ -55,18 +55,43 @@ public class CustomerDetailsScreen : Screen
         //});
 
         // ConsoleKey key;
-        switch (Console.ReadKey().Key)
+        /*switch (Console.ReadKey().Key)
         {
             case ConsoleKey.Backspace:
                 Screen.Display(customerListScreen);
+                break;
+            case ConsoleKey.F1:
+                Clear(this);
+                if (new EditScreen<Customer>("Opret ny kunde", customer,
+                        ("Fornavn", "FirstName"),
+                        ("Efternavn", "LastName"),
+                        ("Vej", "Address.Street"),
+                        ("Husnummer", "Address.HouseNumber"),
+                        ("Postnummer", "Address.ZipCode"),
+                        ("By", "Address.City"),
+                        ("Telefonnummer", "ContactInfo.PhoneNumber"),
+                        ("Email", "contactInfo.Email")).Show() is Customer created)
+            {
+                db.InsertCustomer(
+                    created.FirstName,
+                    created.LastName,
+                    created.Address.Street,
+                    created.Address.HouseNumber,
+                    created.Address.City,
+                    created.Address.ZipCode,
+                    created.Address.Country,
+                    created.ContactInfo.PhoneNumber,
+                    created.ContactInfo.Email!);
+            }
+                Display(customerListScreen);
                 break;
             case ConsoleKey.F2:
                 Clear(this);
                 if (db.GetCustomerById(CustomerId) is Customer cu)
                 {
                     if (new EditScreen<Customer>("Rediger kundeoplysninger for " + customer.FullName, cu,
-                            ("first name", "FirstName"),
-                            ("last name", "LastName"),
+                            ("Fornavn", "FirstName"),
+                            ("Efternavn", "LastName"),
                             ("Vej", "Address.Street"),
                             ("Husnummer", "Address.HouseNumber"),
                             ("Postnummer", "Address.ZipCode"),
@@ -89,6 +114,6 @@ public class CustomerDetailsScreen : Screen
                 };
                 Display(customerListScreen);
                 break;
-        }
+        }*/
     }
 }
