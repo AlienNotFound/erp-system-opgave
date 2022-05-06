@@ -47,26 +47,25 @@ public sealed class DataBase
     ///////////////////////////////////////////////////////////////////////////
     public Customer? GetCustomerFromId(int customerId)
             => customers.FirstOrDefault(c => c.CustomerId == customerId);
-    
 
     // Hvis vi blot returnerede en reference til _customers, ville consumeren kunne ændre i listen.
     // Med GetRange() returnerer vi en kopi af indholdet i stedet.
     public IEnumerable<Customer> GetAllCustomers()
     {
-        string connectionString =
-            @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new(connectionString);
-        connection.Open();
+        if (connection.State == ConnectionState.Closed)
+            connection.Open();
+        SqlDataReader dt;
 
-        SqlCommand cmd = new(@"SELECT * FROM Customers
+        SqlCommand cmd = connection.CreateCommand();
+        cmd.CommandText = @"SELECT * FROM Customers
                                                     INNER JOIN Addresses ON Addresses.Id = Customers.AddressId
-                                                    INNER JOIN Contacts ON Contacts.Id = Customers.AddressId", connection);
-        var dt = cmd.ExecuteReader();
+                                                    INNER JOIN Contacts ON Contacts.Id = Customers.AddressId";
+        dt = cmd.ExecuteReader();
         customers.Clear();
 
         try
         {
-            while (dt.Read()) //TODO: Unit test at den finder data og kolonner
+            while(dt.Read())
             {
                 customers.Add(new Customer(
                     dt["FirstName"].ToString()!,
@@ -78,7 +77,8 @@ public sealed class DataBase
                         dt["Country"].ToString()!),
                     new ContactInfo(dt["PhoneNumber"].ToString()!,
                         dt["Email"].ToString()),
-                    Int32.Parse(dt["Id"].ToString()!)
+                    Int32.Parse(dt["Id"].ToString()!),
+                    Convert.ToDateTime(dt["LastPurchase"])
                 ));
             }
         }
@@ -145,20 +145,21 @@ public sealed class DataBase
             connection.Open();
         SqlDataReader dt;
         SqlCommand cmd = connection.CreateCommand();
-        cmd.CommandText = "SELECT Id, FirstName, LastName, AddressId, ContactId FROM Customers WHERE Id = @id";
+        cmd.CommandText = "SELECT Id, FirstName, LastName, AddressId, ContactId, LastPurchase FROM Customers WHERE Id = @id";
         cmd.Parameters.AddWithValue("@id", customerId);
         dt = cmd.ExecuteReader();
         
         if (dt.Read())
         {
-            var CustomerId = dt.GetInt32(0);
-            var FirstName = dt.GetString(1);
-            var LastName = dt.GetString(2);
-            var AddressId = dt.GetInt32(3);
-            var ContactId = dt.GetInt32(4);
+            var id = dt.GetInt32(0);
+            var firstName = dt.GetString(1);
+            var lastName = dt.GetString(2);
+            var addressId = dt.GetInt32(3);
+            var contactId = dt.GetInt32(4);
+            var lastPurchase = dt.GetDateTime(5);
             
             connection.Close();
-            Customer customer = new Customer(FirstName, LastName, GetAddressById(AddressId), GetContactById(ContactId), CustomerId);
+            Customer customer = new Customer(firstName, lastName, GetAddressById(addressId), GetContactById(contactId), id, lastPurchase);
             return customer;
         }
         connection.Close();
@@ -213,31 +214,31 @@ public sealed class DataBase
         string phoneNumber,
         string email)
     {
-        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        SqlConnection connection = new(connectionString);
-        connection.Open();
+        if (connection.State == ConnectionState.Closed)
+            connection.Open();
+        SqlCommand cmd = connection.CreateCommand();
+        
+        cmd.CommandText = @"UPDATE Customers SET
+                                FirstName = @firstName,
+                                LastName = @lastName
+                                WHERE Id = @id
 
-        SqlCommand cmd = new(@"UPDATE Customers SET
-                                                    FirstName = @firstName,
-                                                    LastName = @lastName
-                                                    WHERE Id = @id
+                                UPDATE Addresses SET
+                                Street = @street,
+                                HouseNumber = @houseNumber,
+                                City = @city,
+                                ZipCode = @zipCode,
+                                Country = @country
+                                FROM Customers C, Addresses A
+                                WHERE C.AddressId = A.Id
+                                AND C.Id = @id
 
-                                                    UPDATE Addresses SET
-                                                    Street = @street,
-                                                    HouseNumber = @houseNumber,
-                                                    City = @city,
-                                                    ZipCode = @zipCode,
-                                                    Country = @country
-                                                    FROM Customers C, Addresses A
-                                                    WHERE C.AddressId = A.Id
-                                                    AND C.Id = @id
-
-                                                    UPDATE Contacts SET
-                                                    PhoneNumber = @phoneNumber,
-                                                    Email = @email
-                                                    FROM Customers C, Contacts CO
-                                                    WHERE C.ContactId = CO.Id
-                                                    AND C.Id = @id", connection);
+                                UPDATE Contacts SET
+                                PhoneNumber = @phoneNumber,
+                                Email = @email
+                                FROM Customers C, Contacts CO
+                                WHERE C.ContactId = CO.Id
+                                AND C.Id = @id";
         cmd.Parameters.AddWithValue("@id", id);
         cmd.Parameters.AddWithValue("@street", street);
         cmd.Parameters.AddWithValue("@houseNumber", houseNumber);
@@ -306,7 +307,10 @@ public sealed class DataBase
                                 FROM SalesOrderHeaders s
                                 INNER JOIN Customers c ON s.CustomerId = c.Id
                                 INNER JOIN Addresses a ON c.AddressId = a.Id
-                                WHERE s.Id = (SELECT TOP 1 Id FROM SalesOrderHeaders ORDER BY Id DESC)";
+                                WHERE s.Id = (SELECT TOP 1 Id FROM SalesOrderHeaders ORDER BY Id DESC)
+                            UPDATE Customers
+                                SET LastPurchase = GETDATE()
+								WHERE Id = @customerId";
         
         cmd.Parameters.AddWithValue("@customerId", customerId);
         cmd.Parameters.AddWithValue("@state", state);

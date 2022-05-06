@@ -122,6 +122,10 @@ public class EditScreen<T>
                 {
                     property.SetValue(target, DateTime.Parse(field.Value));
                 }
+                else if (type == typeof(Int16))
+                {
+                    property.SetValue(target, Int16.Parse(field.Value));
+                }
                 else
                 {
                     throw new Exception($"type not supported: {type}");

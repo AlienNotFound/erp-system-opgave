@@ -10,7 +10,6 @@ public class CustomerDetailsScreen : Screen
 
     public override string Title { get; set; } = "Kunde detaljer";
 
-
     public CustomerDetailsScreen(int customerId)
     {
         CustomerId = customerId;
@@ -30,16 +29,16 @@ public class CustomerDetailsScreen : Screen
         }
 
         ListPage<Customer> listPage = new();
-
+        Console.WriteLine("\nTryk F2 for at redigere kunde");
         listPage.Add(customer);
-        listPage.AddColumn("Navn", "FirstName");
-        listPage.AddColumn("Adresse", "Address", customer.FullAddress.Length + 3);
-        listPage.AddColumn("Sidste køb", "LastPurchase");
+        listPage.AddColumn("Navn", "FullName", customer.FullName.Length + 3);
+        listPage.AddColumn("Adresse", "FullAddress", customer.FullAddress.Length + 3);
+        listPage.AddColumn("Sidste køb", "LastPurchase", customer.LastPurchase.ToString()!.Length + 3);
         listPage.Draw();
 
         Console.WriteLine("\nTryk på BACKSPACE for at vende tilbage til kundelisten");
 
-        ConsoleKey key;
+        /*ConsoleKey key;
         key = Console.ReadKey().Key;
         if (key == ConsoleKey.Backspace)
             // ListPage<Customer> listPage = new ListPage<Customer>();
@@ -48,8 +47,12 @@ public class CustomerDetailsScreen : Screen
             ("Navn", "FullName"),
             ("Adresse", "Address"),
             ("Sidste kob", "LastPurchase"))
-            .Draw();
-
+            .Draw();*/
+        /*listPage.AddKey(ConsoleKey.F2, c =>
+        {*/
+            
+            //Display(new CustomerUpdateScreen("Updater kunde", c.CustomerId));
+        //});
 
         // ConsoleKey key;
         switch (Console.ReadKey().Key)
@@ -58,7 +61,33 @@ public class CustomerDetailsScreen : Screen
                 Screen.Display(customerListScreen);
                 break;
             case ConsoleKey.F2:
-                Screen.Display(new CustomerUpdateScreen($"Opdater {customer.FullName}", customer.CustomerId));
+                Clear(this);
+                if (db.GetCustomerById(CustomerId) is Customer cu)
+                {
+                    if (new EditScreen<Customer>("Rediger kundeoplysninger for " + customer.FullName, cu,
+                            ("first name", "FirstName"),
+                            ("last name", "LastName"),
+                            ("Vej", "Address.Street"),
+                            ("Husnummer", "Address.HouseNumber"),
+                            ("Postnummer", "Address.ZipCode"),
+                            ("By", "Address.City"),
+                            ("Telefonnummer", "ContactInfo.PhoneNumber"),
+                            ("Email", "ContactInfo.Email")).Show() is Customer updated)
+                    {
+                        db.UpdateCustomer(
+                            updated.CustomerId,
+                            updated.FirstName,
+                            updated.LastName,
+                            updated.Address.Street,
+                            updated.Address.HouseNumber,
+                            updated.Address.City,
+                            updated.Address.ZipCode,
+                            updated.Address.Country,
+                            updated.ContactInfo.PhoneNumber,
+                            updated.ContactInfo.Email!);
+                    }
+                };
+                Display(customerListScreen);
                 break;
         }
     }

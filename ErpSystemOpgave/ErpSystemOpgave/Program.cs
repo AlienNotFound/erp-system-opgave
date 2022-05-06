@@ -15,10 +15,10 @@ class Program
     {
         var db = DataBase.Instance;
 
-        /*db.GetAllCustomers();
+        db.GetAllCustomers();
 
         var lp = new LandingPage();
-        lp.Show();*/
+        lp.Show();
 
         // CustomerListScreen customerListScreen = new();
         // Screen.Display(customerListScreen);
@@ -31,10 +31,10 @@ class Program
         //     ("Phone", "ContactInfo.PhoneNumber"),
         //     ("Mail", "ContactInfo.Email"));
 
-        SalesOrderHearderScreen salesOrderHearderScreen = new SalesOrderHearderScreen();
+        /*SalesOrderHearderScreen salesOrderHearderScreen = new SalesOrderHearderScreen();
         CreateSalesOrderScreen createSalesOrderScreen = new CreateSalesOrderScreen();
         //CustomerListScreen customerListScreen = new();
-        Screen.Display(createSalesOrderScreen);
+        Screen.Display(createSalesOrderScreen);*/
     }
     public static void ShowMenu(params (String Description, Action Action)[] items)
     {
