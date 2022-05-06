@@ -57,7 +57,7 @@ public sealed class DataBase
         string connectionString =
             @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
         SqlConnection connection = new(connectionString);
-        connection.Open();
+        // connection.Open();
 
         SqlCommand cmd = new(@"SELECT * FROM Customers
                                                     INNER JOIN Addresses ON Addresses.Id = Customers.AddressId
@@ -88,14 +88,14 @@ public sealed class DataBase
             Console.WriteLine(e);
             throw;
         }
-        connection.Close();
+        // connection.Close();
         return customers.GetRange(0, customers.Count);
     }
 
     public Address GetAddressById(int id)
     {
-        if (connection.State == ConnectionState.Closed)
-            connection.Open();
+        // if (connection.State == ConnectionState.Closed)
+        //     connection.Open();
         SqlDataReader dt;
         SqlCommand cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT Id, Street, HouseNumber, City, ZipCode, Country FROM Addresses WHERE Id = @id";
@@ -111,16 +111,16 @@ public sealed class DataBase
             var Country = dt.GetString(5);
 
             Address address = new Address(Street, HouseNumber, City, ZipCode, Country);
-            connection.Close();
+            // connection.Close();
             return address;
         }
-        connection.Close();
+        // connection.Close();
         return null;
     }
     public ContactInfo GetContactById(int id)
     {
-        if (connection.State == ConnectionState.Closed)
-            connection.Open();
+        // if (connection.State == ConnectionState.Closed)
+        //     connection.Open();
         SqlDataReader dt;
         SqlCommand cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT Id, PhoneNumber, Email FROM Contacts WHERE Id = @id";
@@ -133,17 +133,17 @@ public sealed class DataBase
             var Email = dt.GetString(2);
 
             ContactInfo contactInfo = new ContactInfo(PhoneNumber, Email);
-            connection.Close();
+            // connection.Close();
             return contactInfo;
         }
-        connection.Close();
+        // connection.Close();
         return null;
     }
 
     public Customer? GetCustomerById(int customerId)
     {
-        if (connection.State == ConnectionState.Closed)
-            connection.Open();
+        // if (connection.State == ConnectionState.Closed)
+        //     connection.Open();
         SqlDataReader dt;
         SqlCommand cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT Id, FirstName, LastName, AddressId, ContactId FROM Customers WHERE Id = @id";
@@ -158,11 +158,11 @@ public sealed class DataBase
             var AddressId = dt.GetInt32(3);
             var ContactId = dt.GetInt32(4);
 
-            connection.Close();
+            // connection.Close();
             Customer customer = new Customer(FirstName, LastName, GetAddressById(AddressId), GetContactById(ContactId), CustomerId);
             return customer;
         }
-        connection.Close();
+        // connection.Close();
         return null;
     }
 
@@ -179,7 +179,7 @@ public sealed class DataBase
     {
         string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
         SqlConnection connection = new(connectionString);
-        connection.Open();
+        // connection.Open();
 
         SqlCommand cmd = new(@"INSERT INTO Addresses(Street, HouseNumber, City, ZipCode, Country)
                                                      VALUES (@street, @houseNumber, @city, @zipCode, @country)
@@ -200,7 +200,7 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@lastName", lastName);
         cmd.ExecuteReader();
 
-        connection.Close();
+        // connection.Close();
     }
 
     public void UpdateCustomer(int id,
@@ -216,7 +216,7 @@ public sealed class DataBase
     {
         string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
         SqlConnection connection = new(connectionString);
-        connection.Open();
+        // connection.Open();
 
         SqlCommand cmd = new(@"UPDATE Customers SET
                                                     FirstName = @firstName,
@@ -251,7 +251,7 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@lastName", lastName);
         cmd.ExecuteReader();
 
-        connection.Close();
+        // connection.Close();
     }
 
     public void DeleteCustomerById(int customerId)
@@ -268,11 +268,12 @@ public sealed class DataBase
     {
         // using SqlConnection connection = new(CONNECTION_STRING);
         using SqlCommand cmd = new("SELECT * FROM Products", connection);
-        cmd.Connection.Open();
+        // cmd.Connection.Open();
         var dt = cmd.ExecuteReader();
         List<Product> prods = new();
         while (dt.Read())
             prods.Add(Product.FromReader(dt));
+        dt.Close();
         return prods;
     }
     public Product? GetProductById(int productId)
@@ -280,18 +281,19 @@ public sealed class DataBase
         // using var connection = new SqlConnection(CONNECTION_STRING);
         using SqlCommand cmd = new("SELECT * FROM products WHERE ID = @id", connection);
         cmd.Parameters.AddWithValue("@id", productId);
-        cmd.Connection.Open();
+        // cmd.Connection.Open();
+        // cmd.Connection.
         var dt = cmd.ExecuteReader();
-        if (dt.Read())
-            return Product.FromReader(dt);
-        return null;
+        var res = dt.Read() ? Product.FromReader(dt) : null;
+        dt.Close();
+        return res;
     }
 
     public void InsertProduct(Product product)
     {
         // using SqlConnection connection = new(CONNECTION_STRING);
         using SqlCommand cmd = new("INSERT INTO products (name, description, instock, buyprice, saleprice, location, unit) VALUES (@name, @description, @instock, @buyprice, @saleprice, @location, @unit)", connection);
-        cmd.Connection.Open();
+        // cmd.Connection.Open();
         cmd.Parameters.AddWithValue("@name", product.Name);
         cmd.Parameters.AddWithValue("@description", product.Description);
         cmd.Parameters.AddWithValue("@instock", product.InStock);
@@ -301,7 +303,7 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@unit", product.Unit.ToString());
         cmd.ExecuteNonQuery();
         Console.WriteLine("Data tilføjet");
-        connection.Close();
+        // connection.Close();
     }
     public void UpdateProduct(int id, string name, string? description, decimal saleprice, decimal buyprice, double instock, string location, string unit, decimal avancepercent, decimal avancekroner)
     {
@@ -319,18 +321,18 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@unit", unit);
         cmd.ExecuteNonQuery();
         Console.WriteLine("Data opdateret");
-        connection.Close();
+        // connection.Close();
     }
     public void DeleteProduct(int id)
     {
         string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
         SqlConnection connection = new SqlConnection(connectionString);
-        connection.Open();
+        // connection.Open();
         SqlCommand cmd = new SqlCommand("DELETE FROM products WHERE id = @id", connection);
         cmd.Parameters.AddWithValue("@id", id);
         cmd.ExecuteNonQuery();
         Console.WriteLine("Data slettet");
-        connection.Close();
+        // connection.Close();
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -338,8 +340,8 @@ public sealed class DataBase
     ///////////////////////////////////////////////////////////////////////////
     public void InsertSalesOrderHeader(int customerId, string state, DateTime creationTime)
     {
-        if (connection.State == ConnectionState.Closed)
-            connection.Open();
+        // if (connection.State == ConnectionState.Closed)
+        //     connection.Open();
         // SqlDataReader dt;
         SqlCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"INSERT INTO SalesOrderHeaders(CustomerId, State, PriceSum, Date)
@@ -361,13 +363,13 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@date", creationTime);
 
         cmd.ExecuteReader();
-        connection.Close();
+        // connection.Close();
     }
 
     public IEnumerable<SalesOrderHeader> GetAllSalesOrderHeaders()
     {
-        if (connection.State == ConnectionState.Closed)
-            connection.Open();
+        // if (connection.State == ConnectionState.Closed)
+        //     connection.Open();
         SqlDataReader dt;
         SqlCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT * FROM SalesOrderHeaders
@@ -397,13 +399,13 @@ public sealed class DataBase
             throw;
         }
 
-        connection.Close();
+        // connection.Close();
         return salesOrderHeaders.GetRange(0, salesOrderHeaders.Count);
     }
     public void InsertOrderLine(int productId, int quantity)
     {
-        if (connection.State == ConnectionState.Closed)
-            connection.Open();
+        // if (connection.State == ConnectionState.Closed)
+        //     connection.Open();
         SqlCommand cmd = connection.CreateCommand();
 
         cmd.CommandText = @"INSERT INTO OrderLines (ProductId, Quantity, SalesOrderHeaderId)
@@ -418,7 +420,7 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@quantity", quantity);
 
         cmd.ExecuteReader();
-        connection.Close();
+        // connection.Close();
     }
     public void UpdateSalesOrder(int orderNumber, int customerId, decimal price)
     {
