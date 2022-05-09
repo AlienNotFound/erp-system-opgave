@@ -42,6 +42,17 @@ public class OrderListScreen : Screen
             Clear();
             CreateOrder();
         });
+        listPage.AddKey(ConsoleKey.F5, c =>
+        {
+            Clear();
+            var confirm = false;
+            var dialog = new Menu<bool>($"yeet order {c.OrderNumber}?");
+            dialog.InputFields.Add(new ButtonField("Yeet away", () => { confirm = true; dialog.Done = true; }));
+            dialog.InputFields.Add(new ButtonField("On second thought...", () => { dialog.Done = true; }));
+            dialog.Show();
+            if (confirm)
+                DataBase.Instance.DeleteSalesOrder(c.OrderNumber);
+        });
     }
 
     private void CreateOrder()

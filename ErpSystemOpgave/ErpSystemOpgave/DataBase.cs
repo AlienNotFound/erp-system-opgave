@@ -302,7 +302,7 @@ public sealed class DataBase
         SqlCommand cmd = connection.CreateCommand();
 
         cmd.CommandText = @"INSERT INTO OrderLines (ProductId, Quantity, Price, SalesOrderHeaderId)
-                                    VALUES (@productId, @quantity, @price, @order))
+                                    VALUES (@productId, @quantity, @price, @order)
                                 UPDATE SalesOrderHeaders
                                     SET PriceSum = p.SalePrice * o.Quantity
                                     FROM SalesOrderHeaders s
@@ -341,5 +341,13 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@id", orderId);
         using var dt = cmd.ExecuteReader();
         return dt.Read() ? SalesOrderHeader.FromReader(dt) : null;
+    }
+
+    public void DeleteSalesOrder(int id)
+    {
+        //TODO: set tables on delete behavior to cascade. this method bugs out if the order has any orderlines.
+        SqlCommand cmd = new("DELETE FROM SalesOrderHeaders WHERE id = @id", connection);
+        cmd.Parameters.AddWithValue("@id", id);
+        cmd.ExecuteNonQuery();
     }
 }

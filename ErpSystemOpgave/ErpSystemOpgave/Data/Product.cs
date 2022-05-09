@@ -29,6 +29,7 @@ public class Product
                 reader.GetDouble(offset++),
                 reader.GetString(offset++),
                 Enum.Parse<ProductUnit>(reader.GetString(offset++))
+
         // reader.GetDecimal(8),
         // reader.GetDecimal(9)
         );
