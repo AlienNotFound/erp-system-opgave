@@ -1,7 +1,7 @@
 using ErpSystemOpgave.Data;
 using TECHCOOL.UI;
 
-namespace ErpSystemOpgave;
+namespace ErpSystemOpgave.Ui;
 
 public class ProductListScreen : Screen
 {
@@ -10,7 +10,6 @@ public class ProductListScreen : Screen
 
     protected override void Draw()
     {
-        // TODO: Change to pull data from Products
         Clear(this);
         var listPage = Program.CreateListPageWith(
             DataBase.Instance.GetAllProducts(),
@@ -37,12 +36,12 @@ public class ProductListScreen : Screen
                     ("Salgspris", "SalePrice"),
                     ("Købspris", "BuyPrice")).Show() is Product updated)
                 {
-                    DataBase.Instance.UpdateProduct(updated.ProductId, updated.Name, updated.Description, updated.SalePrice, updated.BuyPrice, updated.InStock, updated.Location, updated.Unit.ToString(), updated.AvancePercent, updated.AvancePercent);
+                    DataBase.Instance.UpdateProduct(p);
                 }
             // Display(new CustomerUpdateScreen("Updater produkt", c.ProductId));
         });
 
-        listPage.AddKey(ConsoleKey.F3, _ =>
+        listPage.AddKey(ConsoleKey.F1, _ =>
         {
             Clear();
             if (new EditScreen<Product>("Tilføj Produkt", new Product(0, "", "", 0, 0, 0, "0000", ProductUnit.Quantity),

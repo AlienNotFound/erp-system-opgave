@@ -1,6 +1,8 @@
 using ErpSystemOpgave;
 using TECHCOOL.UI;
 
+namespace ErpSystemOpgave.Ui;
+
 public class LandingPage
 {
     private int SelectionIndex;
@@ -19,7 +21,7 @@ public class LandingPage
             "\t\t\t"));
         InputFields.Add(new ButtonField(
             "Salg".PadCenter(30),
-            () => Screen.Display(new ProductListScreen()),
+            () => Screen.Display(new OrderListScreen()),
             "\t\t\t"));
 
         Tooltips.Add("Inspicer lager.\nSe produktdetaljer\ntilfoj, opdater eller fjern produkter");

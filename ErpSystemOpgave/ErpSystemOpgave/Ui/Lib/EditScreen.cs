@@ -1,25 +1,17 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Text;
-using ErpSystemOpgave.Data;
 
-namespace ErpSystemOpgave;
+namespace ErpSystemOpgave.Ui;
 
 
 /// <summary>
 /// A screen that allows editing an entry of `T`
 /// </summary>
 /// <typeparam name="T">foo</typeparam>
-public class EditScreen<T>
+public class EditScreen<T> : Menu<T>
 {
-    private int SelectionIndex;
-    private readonly List<IField> InputFields;
     private readonly T Record;
-    private readonly string Title;
-    private T? ReturnValue;
-
-    // !! this is such an ugly hack. Simon says (heh) that I'm allowed to write shitty code.
-    private bool Done;
 
     /// <summary>
     /// Create a new EditScreen.
@@ -44,20 +36,26 @@ public class EditScreen<T>
     ///         db.UpdateCustomer(updatedCustomer);
     ///     </code>
     /// </example>
-    public EditScreen(string title, T record, params (string title, string property)[] props)
+    public EditScreen(string title, T record, params (string title, string property)[] props) : base(title)
     {
-        Title = title;
         InputFields = props.Select(p =>
         {
             var (target, prop) = Utility.GetProp(record!, p.property);
             PropertyInfo property = target.GetType().GetProperty(prop)!;
-            var val = property.GetValue(target)!;
-            if (val is Enum u)
-                return CarouselWrapper.Create(p.title, p.property, u);
-            return new InputField(
-               p.title,
-               p.property,
-               val.ToString()!) as IField;
+            try
+            {
+                var val = property.GetValue(target)!;
+                if (val is Enum u)
+                    return CarouselWrapper.Create(p.title, p.property, u);
+                return new InputField(
+                   p.title,
+                   p.property,
+                   val.ToString()!) as IField;
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"No value for property {p}", e);
+            }
         }).ToList();
         InputFields.Add(new ButtonField("Okay", () =>
         {
@@ -69,53 +67,6 @@ public class EditScreen<T>
         }));
         InputFields.Add(new ButtonField("Tilbage", () => { Done = true; }));
         Record = record;
-    }
-
-    /// <summary>
-    /// Start the "main loop" of the EditScreen.
-    /// Draw the screen and await user input, and loop until the user leaves the screen.
-    /// </summary>
-    /// <returns>
-    /// Either the modified `T` if terminated with "Ok". 
-    /// otherwise return the original record unchanged.
-    /// </returns>
-    public T? Show()
-    {
-        ConsoleKeyInfo input = new();
-        while (true)
-        {
-            var field = InputFields[SelectionIndex];
-            switch (input.Key)
-            {
-                case ConsoleKey.DownArrow:
-                    SelectionIndex.Rotate(1, InputFields.Count);
-                    break;
-                case ConsoleKey.UpArrow:
-                    SelectionIndex.Rotate(-1, InputFields.Count);
-                    break;
-                default:
-                    field.HandleInput(input);
-                    break;
-            }
-            if (Done)
-                break;
-            Draw();
-            input = Console.ReadKey();
-        }
-        Console.Clear();
-        return ReturnValue;
-    }
-
-    private void Draw()
-    {
-        Console.Clear();
-        System.Console.WriteLine(Title);
-        System.Console.WriteLine("");
-        foreach (var (item, i) in InputFields.Select((p, i) => (p, i)))
-            item.Draw(i == SelectionIndex);
-        if (InputFields[SelectionIndex] is InputField field)
-            Console.SetCursorPosition(field.Value.Length + 2, SelectionIndex * 3 + 3);
-        Console.CursorVisible = InputFields[SelectionIndex] is InputField;
     }
 }
 
@@ -212,6 +163,7 @@ class InputField : IField, IInput
         {
             string => Value,
             int => int.Parse(Value),
+            short => short.Parse(Value),
             double => double.Parse(Value),
             decimal => decimal.Parse(Value),
             _ => throw new Exception($"type not supported: {property.PropertyType}")

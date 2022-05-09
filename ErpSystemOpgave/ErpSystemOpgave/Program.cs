@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ErpSystemOpgave.Data;
-using TECHCOOL.UI;
+﻿using TECHCOOL.UI;
 
 namespace ErpSystemOpgave;
-using Data;
+
+using System.Reflection;
+using ErpSystemOpgave.Ui;
 using static System.Console;
 
 
@@ -13,7 +11,6 @@ class Program
 {
     public static void Main(string[] args)
     {
-        var db = DataBase.Instance;
         new LandingPage().Show();
     }
 
@@ -39,7 +36,7 @@ class Program
     (T record, params (string title, string property)[] items)
     {
         var rows = items.Select(i => new DetailViewItem(
-            i.title, typeof(T).GetProperty(i.property)?.GetValue(record)?.ToString() ?? ""));
+            i.title, typeof(T).GetProperty(i.property, System.Reflection.BindingFlags.FlattenHierarchy)?.GetValue(record)?.ToString() ?? ""));
         return CreateListPageWith(rows, ("Egenskab", "Title"), ("Værdi", "Value"));
     }
 }
@@ -51,11 +48,12 @@ static class ListPageExtensions
         try
         {
             listPage.AddColumn(title, property, Math.Max(collection.Max(item =>
-            String.Format("{0}", typeof(T).GetProperty(property)!.GetValue(item)).Length), title.Length) + 4);
+            String.Format("{0}", typeof(T).GetProperty(property, BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance)!.GetValue(item)).Length), title.Length) + 4);
         }
-        catch
+        catch (Exception e)
         {
-            throw new Exception(String.Format("Could not add column {0} to listpage of {1}", property, typeof(T)));
+            // throw new Exception(String.Format("Could not add column {0} to listpage of {1}: {2}", property, typeof(T), e));
+            WriteLine("Could not add column {0} to listpage of {1}: {2}", property, typeof(T), e);
         }
     }
 };

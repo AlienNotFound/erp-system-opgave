@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data;
-using ErpSystemOpgave.Data;
 
 public sealed class DataBase
 {
@@ -17,7 +16,12 @@ public sealed class DataBase
 
     private DataBase()
     {
-        string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
+        string connectionString = @"
+        Server=docker.data.techcollege.dk;
+        Database=H1PD021122_Gruppe3;
+        User Id=H1PD021122_Gruppe3;
+        Password=H1PD021122_Gruppe3;
+        MultipleActiveResultSets=True";
         connection = new SqlConnection(connectionString);
         connection.Open();
     }
@@ -43,6 +47,27 @@ public sealed class DataBase
     /////////////         Utility         /////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
 
+
+    public T? GetEntryById<T>(string tableName, int id, Func<IDataReader, T> readerFunc) where T : class
+    {
+        using SqlCommand cmd = new("SELECT * FROM @table_name WHERE Id = @id", connection);
+        cmd.Parameters.AddWithValue("@id", id);
+        cmd.Parameters.AddWithValue("@table_name", tableName);
+        using var dt = cmd.ExecuteReader();
+        return dt.Read() ? readerFunc(dt) : null;
+    }
+
+    public IEnumerable<T> GetAllEntries<T>(string tableName, Func<IDataReader, T> readerFunc) where T : class
+    {
+        using SqlCommand cmd = new("SELECT * FROM @table_name", connection);
+        cmd.Parameters.AddWithValue("@table_name", tableName);
+        using var dt = cmd.ExecuteReader();
+        List<T> entries = new();
+        while (dt.Read())
+            entries.Add(readerFunc(dt));
+        return entries;
+    }
+
     ///////////////////////////////////////////////////////////////////////////
     /////////////         Customer        /////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
@@ -54,111 +79,36 @@ public sealed class DataBase
     // Med GetRange() returnerer vi en kopi af indholdet i stedet.
     public IEnumerable<Customer> GetAllCustomers()
     {
-        // string connectionString =
-        //     @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        // SqlConnection connection = new(connectionString);
-        // connection.Open();
-
-        SqlCommand cmd = new(@"SELECT * FROM Customers
-                                                    INNER JOIN Addresses ON Addresses.Id = Customers.AddressId
-                                                    INNER JOIN Contacts ON Contacts.Id = Customers.AddressId", connection);
-        var dt = cmd.ExecuteReader();
-        customers.Clear();
-
-        try
-        {
-            while (dt.Read()) //TODO: Unit test at den finder data og kolonner
-            {
-                customers.Add(new Customer(
-                    dt["FirstName"].ToString()!,
-                    dt["LastName"].ToString()!,
-                    new Address(dt["Street"].ToString()!,
-                        dt["HouseNumber"].ToString()!,
-                        dt["City"].ToString()!,
-                        short.Parse(dt["ZipCode"].ToString()!),
-                        dt["Country"].ToString()!),
-                    new ContactInfo(dt["PhoneNumber"].ToString()!,
-                        dt["Email"].ToString()),
-                    Int32.Parse(dt["Id"].ToString()!)
-                ));
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-        // connection.Close();
-        dt.Close();
-        return customers.GetRange(0, customers.Count);
+        SqlCommand cmd = new(@"SELECT * FROM Customers", connection);
+        using var dt = cmd.ExecuteReader();
+        List<Customer> customers = new();
+        while (dt.Read())
+            customers.Add(Customer.FromReader(dt));
+        return customers;
     }
 
     public Address? GetAddressById(int id)
     {
-        SqlDataReader dt;
-        SqlCommand cmd = connection.CreateCommand();
-        cmd.CommandText = "SELECT Id, Street, HouseNumber, City, ZipCode, Country FROM Addresses WHERE Id = @id";
+        SqlCommand cmd = new("SELECT Id, Street, HouseNumber, City, ZipCode, Country FROM Addresses WHERE Id = @id", connection);
         cmd.Parameters.AddWithValue("@id", id);
-        dt = cmd.ExecuteReader();
-
-        if (dt.Read())
-        {
-            var Street = dt.GetString(1);
-            var HouseNumber = dt.GetString(2);
-            var City = dt.GetString(3);
-            var ZipCode = dt.GetInt16(4);
-            var Country = dt.GetString(5);
-
-            Address address = new Address(Street, HouseNumber, City, ZipCode, Country);
-            // connection.Close();
-            return address;
-        }
-        dt.Close();
-        return null;
+        using var dt = cmd.ExecuteReader();
+        return dt.Read() ? Address.FromReader(dt) : null;
     }
+
     public ContactInfo? GetContactById(int id)
     {
-        SqlDataReader dt;
-        SqlCommand cmd = connection.CreateCommand();
-        cmd.CommandText = "SELECT Id, PhoneNumber, Email FROM Contacts WHERE Id = @id";
+        using SqlCommand cmd = new("SELECT Id, PhoneNumber, Email FROM Contacts WHERE Id = @id", connection);
         cmd.Parameters.AddWithValue("@id", id);
-        dt = cmd.ExecuteReader();
-
-        if (dt.Read())
-        {
-            var PhoneNumber = dt.GetString(1);
-            var Email = dt.GetString(2);
-
-            ContactInfo contactInfo = new ContactInfo(PhoneNumber, Email);
-            // connection.Close();
-            return contactInfo;
-        }
-        dt.Close();
-        return null;
+        using var dt = cmd.ExecuteReader();
+        return dt.Read() ? ContactInfo.FromReader(dt) : null;
     }
 
     public Customer? GetCustomerById(int customerId)
     {
-        SqlDataReader dt;
-        SqlCommand cmd = connection.CreateCommand();
-        cmd.CommandText = "SELECT Id, FirstName, LastName, AddressId, ContactId FROM Customers WHERE Id = @id";
+        using SqlCommand cmd = new("SELECT Id, FirstName, LastName, AddressId, ContactId FROM Customers WHERE Id = @id", connection);
         cmd.Parameters.AddWithValue("@id", customerId);
-        dt = cmd.ExecuteReader();
-
-        if (dt.Read())
-        {
-            var CustomerId = dt.GetInt32(0);
-            var FirstName = dt.GetString(1);
-            var LastName = dt.GetString(2);
-            var AddressId = dt.GetInt32(3);
-            var ContactId = dt.GetInt32(4);
-
-            // connection.Close();
-            Customer customer = new Customer(FirstName, LastName, GetAddressById(AddressId), GetContactById(ContactId), CustomerId);
-            return customer;
-        }
-        dt.Close();
-        return null;
+        using var dt = cmd.ExecuteReader();
+        return dt.Read() ? Customer.FromReader(dt) : null;
     }
 
     public void InsertCustomer(
@@ -256,72 +206,48 @@ public sealed class DataBase
     public IEnumerable<Product> GetAllProducts()
     {
         using SqlCommand cmd = new("SELECT * FROM Products", connection);
-        var dt = cmd.ExecuteReader();
+        using var dt = cmd.ExecuteReader();
         List<Product> prods = new();
         while (dt.Read())
             prods.Add(Product.FromReader(dt));
-        dt.Close();
         return prods;
     }
+
     public Product? GetProductById(int productId)
     {
         using SqlCommand cmd = new("SELECT * FROM products WHERE ID = @id", connection);
         cmd.Parameters.AddWithValue("@id", productId);
-        var dt = cmd.ExecuteReader();
-        var res = dt.Read() ? Product.FromReader(dt) : null;
-        dt.Close();
-        return res;
+        using var dt = cmd.ExecuteReader();
+        return dt.Read() ? Product.FromReader(dt) : null;
     }
 
     public void InsertProduct(Product product)
     {
         using SqlCommand cmd = new("INSERT INTO products (name, description, instock, buyprice, saleprice, location, unit) VALUES (@name, @description, @instock, @buyprice, @saleprice, @location, @unit)", connection);
-        cmd.Parameters.AddWithValue("@name", product.Name);
-        cmd.Parameters.AddWithValue("@description", product.Description);
-        cmd.Parameters.AddWithValue("@instock", product.InStock);
-        cmd.Parameters.AddWithValue("@buyprice", product.BuyPrice);
-        cmd.Parameters.AddWithValue("@saleprice", product.SalePrice);
-        cmd.Parameters.AddWithValue("@location", product.Location);
-        cmd.Parameters.AddWithValue("@unit", product.Unit.ToString());
+        cmd.Parameters.AddRange(product.SqlParameters);
         cmd.ExecuteNonQuery();
-        Console.WriteLine("Data tilføjet");
     }
-    public void UpdateProduct(int id, string name, string? description, decimal saleprice, decimal buyprice, double instock, string location, string unit, decimal avancepercent, decimal avancekroner)
+    public void UpdateProduct(Product product)
     {
-        // string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        // SqlConnection connection = new SqlConnection(connectionString);
-        // connection.Open();
-        SqlCommand cmd = new("UPDATE products SET name = @name, description = @description, instock = @instock, buyprice = @buyprice, saleprice = @saleprice, location = @location, unit = @unit WHERE id = @id", connection);
-        cmd.Parameters.AddWithValue("@id", id);
-        cmd.Parameters.AddWithValue("@name", name);
-        cmd.Parameters.AddWithValue("@description", description);
-        cmd.Parameters.AddWithValue("@instock", instock);
-        cmd.Parameters.AddWithValue("@buyprice", buyprice);
-        cmd.Parameters.AddWithValue("@saleprice", saleprice);
-        cmd.Parameters.AddWithValue("@location", location);
-        cmd.Parameters.AddWithValue("@unit", unit);
+        SqlCommand cmd = new(@"UPDATE products SET name = @name, description = @description, instock = @instock, buyprice = @buyprice, saleprice = @saleprice, location = @location, unit = @unit WHERE id = @id", connection);
+        cmd.Parameters.AddRange(product.SqlParameters);
         cmd.ExecuteNonQuery();
-        Console.WriteLine("Data opdateret");
-        // connection.Close();
     }
     public void DeleteProduct(int id)
     {
-        // string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
-        // SqlConnection connection = new SqlConnection(connectionString);
-        SqlCommand cmd = new SqlCommand("DELETE FROM products WHERE id = @id", connection);
+        SqlCommand cmd = new("DELETE FROM products WHERE id = @id", connection);
         cmd.Parameters.AddWithValue("@id", id);
         cmd.ExecuteNonQuery();
-        Console.WriteLine("Data slettet");
     }
 
     ///////////////////////////////////////////////////////////////////////////
     /////////////         Orders          /////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-    public void InsertSalesOrderHeader(int customerId, string state, DateTime creationTime)
+    public int InsertSalesOrderHeader(int customerId, string state, DateTime creationTime)
     {
         SqlCommand cmd = connection.CreateCommand();
         cmd.CommandText = @"INSERT INTO SalesOrderHeaders(CustomerId, State, PriceSum, Date)
-                                VALUES (@customerId, @state, 0, @date)
+                                VALUES (@customerId, @state, @priceSum, @date)
                                 UPDATE SalesOrderHeaders
                                 SET Street = a.Street,
 	                                HouseNumber = a.HouseNumber,
@@ -331,56 +257,52 @@ public sealed class DataBase
                                 FROM SalesOrderHeaders s
                                 INNER JOIN Customers c ON s.CustomerId = c.Id
                                 INNER JOIN Addresses a ON c.AddressId = a.Id
-                                WHERE s.Id = (SELECT TOP 1 Id FROM SalesOrderHeaders ORDER BY Id DESC)";
+                                WHERE s.Id = (SELECT TOP 1 Id FROM SalesOrderHeaders ORDER BY Id DESC);
+                                SELECT SCOPE_IDENTITY()";
 
         cmd.Parameters.AddWithValue("@customerId", customerId);
         cmd.Parameters.AddWithValue("@state", state);
-        //cmd.Parameters.AddWithValue("@priceSum", priceSum);
+        cmd.Parameters.AddWithValue("@priceSum", (decimal)0);
         cmd.Parameters.AddWithValue("@date", creationTime);
 
-        cmd.ExecuteReader();
+        return Convert.ToInt32(cmd.ExecuteScalar());
+    }
+
+    public IEnumerable<SalesOrderLine> GetOrderLinesByHeader(int orderId)
+    {
+        using SqlCommand cmd = new("SELECT * FROM OrderLines WHERE SalesOrderHeaderId = @id", connection);
+        cmd.Parameters.AddWithValue("@id", orderId);
+        using var dt = cmd.ExecuteReader();
+        List<SalesOrderLine> orderLines = new();
+        while (dt.Read())
+            orderLines.Add(SalesOrderLine.FromReader(dt));
+        return orderLines;
     }
 
     public IEnumerable<SalesOrderHeader> GetAllSalesOrderHeaders()
     {
-        SqlDataReader dt;
-        SqlCommand cmd = connection.CreateCommand();
-        cmd.CommandText = @"SELECT * FROM SalesOrderHeaders
-                                INNER JOIN Customers ON Customers.Id = SalesOrderHeaders.CustomerId";
-        dt = cmd.ExecuteReader();
-        salesOrderHeaders.Clear();
+        using SqlCommand cmd = new(@"
+            SELECT SalesOrderHeaders.*, ISNULL(TotalPrice, 0) AS TotalPrice FROM SalesOrderHeaders
+            LEFT JOIN OrderTotals
+            ON Id = SalesOrderHeaderId", connection);
+        using var dt = cmd.ExecuteReader();
+        List<SalesOrderHeader> orders = new();
 
-        try
+        while (dt.Read())
         {
-            SalesOrderHeader salesOrderHeader = new SalesOrderHeader(0, 0, 0, 0, DateTime.MinValue, "", "", "", 0, "");
-            if (dt.Read())
-            {
-                salesOrderHeader.CustomerId = dt.GetInt32(1);
-                salesOrderHeader.State = Enum.Parse<OrderState>(dt.GetString(2));
-                salesOrderHeader.Price = dt.GetDecimal(3);
-                salesOrderHeader.CreationTime = dt.GetDateTime(4);
-                salesOrderHeader.Street = dt.GetString(5);
-                salesOrderHeader.HouseNumber = dt.GetString(6);
-                salesOrderHeader.City = dt.GetString(7);
-                salesOrderHeader.ZipCode = dt.GetInt16(8);
-                salesOrderHeader.Country = dt.GetString(9);
-            }
+            var offset = 0;
+            var order = SalesOrderHeader.FromReader(dt, ref offset);
+            order.Price = dt.GetDecimal(offset);
+            orders.Add(order);
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-
-        dt.Close();
-        return salesOrderHeaders.GetRange(0, salesOrderHeaders.Count);
+        return orders;
     }
-    public void InsertOrderLine(int productId, int quantity)
+    public void InsertOrderLine(int productId, int quantity, decimal price, int orderNumber)
     {
         SqlCommand cmd = connection.CreateCommand();
 
-        cmd.CommandText = @"INSERT INTO OrderLines (ProductId, Quantity, SalesOrderHeaderId)
-                                    VALUES (@productId, @quantity, (SELECT TOP 1 Id FROM SalesOrderHeaders ORDER BY Id DESC))
+        cmd.CommandText = @"INSERT INTO OrderLines (ProductId, Quantity, Price, SalesOrderHeaderId)
+                                    VALUES (@productId, @quantity, @price, @order))
                                 UPDATE SalesOrderHeaders
                                     SET PriceSum = p.SalePrice * o.Quantity
                                     FROM SalesOrderHeaders s
@@ -389,9 +311,12 @@ public sealed class DataBase
 
         cmd.Parameters.AddWithValue("@productId", productId);
         cmd.Parameters.AddWithValue("@quantity", quantity);
+        cmd.Parameters.AddWithValue("@price", price);
+        cmd.Parameters.AddWithValue("@order", orderNumber);
 
         cmd.ExecuteReader();
     }
+
     public void UpdateSalesOrder(int orderNumber, int customerId, decimal price)
     {
         var result = from s in salesOrderHeaders
@@ -410,37 +335,11 @@ public sealed class DataBase
         }
     }
 
-    public void DeleteSalesOrder(int orderNumber)
-    {
-        salesOrderHeaders.RemoveAll(s => s.OrderNumber == orderNumber);
-    }
-
-
     public SalesOrderHeader? GetSalesOrderById(int orderId)
     {
-        var Order = salesOrderHeaders.Find(id => id.OrderNumber == orderId);
-        if (Order is null)
-            return null;
-        Console.WriteLine("Ordre nummer: " + Order.OrderNumber
-                                        + " Kundeid: " + Order.CustomerId
-                                        + " Status: " + Order.State
-                                        + " Pris: " + Order.Price
-                                        //+ " Ordrelinje: " + salesOrderHeaders[orderId].OrderLines
-                                        );
-
-        return Order;
-    }
-
-    public void GetAllSalesOrders()
-    {
-        for (int i = 0; i < salesOrderHeaders.Count; i++)
-        {
-            Console.WriteLine("Ordre nummer: " + salesOrderHeaders[i].OrderNumber
-                                               + " Kundeid: " + salesOrderHeaders[i].CustomerId
-                                               + " Status: " + salesOrderHeaders[i].State
-                                               + " Pris: " + salesOrderHeaders[i].Price
-                                               + " Oprettet: " + salesOrderHeaders[i].CreationTime
-            );
-        }
+        using SqlCommand cmd = new("SELECT * FROM SalesOrderHeaders WHERE ID = @id", connection);
+        cmd.Parameters.AddWithValue("@id", orderId);
+        using var dt = cmd.ExecuteReader();
+        return dt.Read() ? SalesOrderHeader.FromReader(dt) : null;
     }
 }

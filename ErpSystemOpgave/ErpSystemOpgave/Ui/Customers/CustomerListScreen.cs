@@ -1,16 +1,15 @@
-using ErpSystemOpgave.Data;
+﻿using ErpSystemOpgave.Data;
 using TECHCOOL.UI;
 
-namespace ErpSystemOpgave;
+namespace ErpSystemOpgave.Ui;
 
-public class OrderListScreen : Screen
+public class CustomerListScreen : Screen
 {
     public static int SelectedId;
-    public override string Title { get; set; } = "Ordre";
+    public override string Title { get; set; } = "Kunde liste";
 
     protected override void Draw()
     {
-        // TODO: Change to pull data from orders
         Clear(this);
         var listPage = Program.CreateListPageWith(
             DataBase.Instance.GetAllCustomers(),
@@ -18,11 +17,11 @@ public class OrderListScreen : Screen
             ("Navn", "FullName"),
             ("Contact", "ContactInfo"));
 
-        Console.WriteLine("\nTryk på ENTER på den valgte ordre, for at se detaljer\nTryk F2 for at redigere kunde");
+        Console.WriteLine("\nTryk på ENTER på den valgte kunde, for at se detaljer\nTryk F2 for at redigere kunde");
         listPage.AddKey(ConsoleKey.F2, c =>
         {
             Clear();
-            Display(new CustomerUpdateScreen("Updater produkt", c.CustomerId));
+            Display(new CustomerUpdateScreen("Updater kunde", c.CustomerId));
         });
 
         if (listPage.Select() is Customer selected)

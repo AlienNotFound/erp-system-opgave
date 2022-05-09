@@ -1,32 +1,35 @@
 using System;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace ErpSystemOpgave.Data;
 
-//eller som record:
-// public record Customer : Person
-// {
-//     public int CustomerId { get; set; }
-
-//     public Customer(string firstName, string lastName, Address address, ContactInfo contactInfo, int customerId) : base(firstName, lastName, address, contactInfo)
-//     {
-//         CustomerId = customerId;
-//     }
-// }
-
 public class Customer : Person
 {
+    public static readonly string SELECT_QUERY = "SELECT * FROM Customers";
+
+    public static Customer FromReader(IDataReader reader)
+    {
+        var offset = 0;
+        return FromReader(reader, ref offset);
+    }
+    public static Customer FromReader(IDataReader reader, ref int offset) => new(
+            reader.GetInt32(offset++),
+            reader.GetString(offset++),
+            reader.GetString(offset++),
+            DataBase.Instance.GetAddressById(reader.GetInt32(offset++))!,
+            DataBase.Instance.GetContactById(reader.GetInt32(offset++))!);
+
     public int CustomerId { get; set; }
-    public string FullName { get; set; }
-    public string FullAddress { get; set; }
     public DateTime? LastPurchase { get; set; }
 
+    public Customer() { }
 
-    public Customer(string firstName, string lastName, Address address, ContactInfo contactInfo, int id)
+    public Customer(int id, string firstName, string lastName, Address address, ContactInfo contactInfo)
         : base(firstName, lastName, address, contactInfo)
     {
         CustomerId = id;
-        FullName = $"{FirstName} {LastName}";
-        FullAddress = $"{Address.Street}, {Address.ZipCode} {Address.City}";
     }
+
+    public override string ToString() => FullName;
 }
