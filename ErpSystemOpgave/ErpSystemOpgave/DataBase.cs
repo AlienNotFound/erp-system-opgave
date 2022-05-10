@@ -125,7 +125,7 @@ public sealed class DataBase
         // string connectionString = @"Server=docker.data.techcollege.dk;Database=H1PD021122_Gruppe3;User Id=H1PD021122_Gruppe3;Password=H1PD021122_Gruppe3;";
         // SqlConnection connection = new(connectionString);
 
-        SqlCommand cmd = new(@"INSERT INTO Addresses(Street, HouseNumber, City, ZipCode, Country)
+        using SqlCommand cmd = new(@"INSERT INTO Addresses(Street, HouseNumber, City, ZipCode, Country)
                                                      VALUES (@street, @houseNumber, @city, @zipCode, @country)
                                                      INSERT INTO Contacts(PhoneNumber, Email)
                                                      VALUES (@phoneNumber, @email)
@@ -297,6 +297,7 @@ public sealed class DataBase
         }
         return orders;
     }
+
     public void InsertOrderLine(int productId, int quantity, decimal price, int orderNumber)
     {
         SqlCommand cmd = connection.CreateCommand();

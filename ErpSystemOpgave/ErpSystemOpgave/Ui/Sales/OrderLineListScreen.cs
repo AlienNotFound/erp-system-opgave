@@ -68,13 +68,12 @@ public class OrderLineListScreen : Screen
     {
         Clear();
         Console.WriteLine("Enter\t\tInspicer Ordrelinie\nF1\t\tTilføj ny Ordrelinje\nF5\t\tSlet Ordrelinje");
-        if (!rows.Any())
-        {
+        if (!rows.Any()) {
             Clear();
             var confirm = false;
             var dialog = new Menu<bool>($"Der er ingen ordrelinjer for {OrderNumber}.\nVil du oprette en?");
-            dialog.InputFields.Add(new ButtonField("Fuck ja!", () => { confirm = true; dialog.Done = true; }));
-            dialog.InputFields.Add(new ButtonField("næ.", () => { dialog.Done = true; }));
+            dialog.InputFields.Add(new Button("Fuck ja!", () => { confirm = true; dialog.Done = true; }));
+            dialog.InputFields.Add(new Button("næ.", () => { dialog.Done = true; }));
             dialog.Show();
             if (confirm)
                 CreateOrderLine();
