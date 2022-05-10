@@ -13,6 +13,10 @@ public class CustomerDetailsScreen : Screen
     {
         CustomerId = customerId;
     }
+    private string FormatDate(object date)
+    {
+        return ((DateTime)date).ToString("dd MMMM yyyy");
+    }
     protected override void Draw()
     {
         Clear(this);
@@ -21,18 +25,17 @@ public class CustomerDetailsScreen : Screen
 
         Clear(this);
 
-        if (db.GetCustomerFromId(CustomerId) is not Customer customer)
+        if (db.GetCustomerById(CustomerId) is not Customer customer)
         {
-            System.Console.WriteLine("ouper douper");
+            System.Console.WriteLine("Den valgte kunde kunde ikke findes.");
             return;
         }
-
+        
         ListPage<Customer> listPage = new();
-
         listPage.Add(customer);
-        listPage.AddColumn("Navn", "FirstName");
-        listPage.AddColumn("Adresse", "Address", customer.FullAddress.Length + 3);
-        listPage.AddColumn("Sidste køb", "LastPurchase");
+        listPage.AddColumn("Navn", "FullName", customer.FullName.Length + 3);
+        listPage.AddColumn("Adresse", "FullAddress", customer.FullAddress.Length + 3);
+        listPage.AddColumn("Sidste køb", "LastPurchase", customer.LastPurchase.ToString()!.Length + 3, FormatDate);
         listPage.Draw();
 
         Console.WriteLine("\nTryk på BACKSPACE for at vende tilbage til kundelisten");
@@ -40,24 +43,15 @@ public class CustomerDetailsScreen : Screen
         ConsoleKey key;
         key = Console.ReadKey().Key;
         if (key == ConsoleKey.Backspace)
-            // ListPage<Customer> listPage = new ListPage<Customer>();
-
-            Program.CreateDetailsView(customer,
+        {
+            Clear(this);
+            Display(customerListScreen);
+        }
+        
+        Program.CreateDetailsView(customer,
             ("Navn", "FullName"),
             ("Adresse", "Address"),
             ("Sidste kob", "LastPurchase"))
             .Draw();
-
-
-        // ConsoleKey key;
-        switch (Console.ReadKey().Key)
-        {
-            case ConsoleKey.Backspace:
-                Screen.Display(customerListScreen);
-                break;
-            case ConsoleKey.F2:
-                Screen.Display(new CustomerUpdateScreen($"Opdater {customer.FullName}", customer.CustomerId));
-                break;
-        }
     }
 }

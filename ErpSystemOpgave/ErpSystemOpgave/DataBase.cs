@@ -71,15 +71,11 @@ public sealed class DataBase
     ///////////////////////////////////////////////////////////////////////////
     /////////////         Customer        /////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
-    public Customer? GetCustomerFromId(int customerId)
-            => customers.FirstOrDefault(c => c.CustomerId == customerId);
-
-
     // Hvis vi blot returnerede en reference til _customers, ville consumeren kunne ændre i listen.
     // Med GetRange() returnerer vi en kopi af indholdet i stedet.
     public IEnumerable<Customer> GetAllCustomers()
     {
-        SqlCommand cmd = new(@"SELECT * FROM Customers", connection);
+        SqlCommand cmd = new(@"SELECT Customers.*, ISNULL(LastPurchase,'0001-01-01') LastPurchase FROM Customers LEFT JOIN LastPurchases ON CustomerId = Id", connection);
         using var dt = cmd.ExecuteReader();
         List<Customer> customers = new();
         while (dt.Read())
@@ -105,7 +101,10 @@ public sealed class DataBase
 
     public Customer? GetCustomerById(int customerId)
     {
-        using SqlCommand cmd = new("SELECT Id, FirstName, LastName, AddressId, ContactId FROM Customers WHERE Id = @id", connection);
+        using SqlCommand cmd = new(@"SELECT Id, FirstName, LastName, AddressId, ContactId, ISNULL(LastPurchase,'0001-01-01') AS LastPurchase 
+                                                FROM Customers
+                                                LEFT JOIN LastPurchases ON CustomerId = Id
+                                                WHERE Customers.Id = @id", connection);
         cmd.Parameters.AddWithValue("@id", customerId);
         using var dt = cmd.ExecuteReader();
         return dt.Read() ? Customer.FromReader(dt) : null;
@@ -193,9 +192,18 @@ public sealed class DataBase
         cmd.ExecuteReader();
     }
 
-    public void DeleteCustomerById(int customerId)
+    public void DeleteCustomerById(int Id)
     {
-        customers.RemoveAll(c => c.CustomerId == customerId);
+        SqlCommand cmd = new(@"SELECT c.Id as Id, AddressId, ContactId INTO #TempTable FROM Customers c
+                                        join Addresses as a on a.Id = c.AddressId
+                                        join Contacts as co on co.Id = c.ContactId
+                                        where c.Id = @id;
+                                        DELETE FROM Addresses where Id IN (SELECT AddressId from #TempTable)
+                                        DELETE FROM Contacts where Id IN (SELECT ContactId FROM #TempTable)
+                                        DELETE FROM Customers WHERE Id in (SELECT Id From #TempTable);
+                                        DROP TABLE #TempTable;", connection);
+        cmd.Parameters.AddWithValue("@id", Id);
+        cmd.ExecuteNonQuery();
     }
 
 
