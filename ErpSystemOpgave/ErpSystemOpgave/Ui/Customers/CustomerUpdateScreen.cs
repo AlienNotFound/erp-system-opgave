@@ -1,8 +1,7 @@
-namespace ErpSystemOpgave;
-
 using ErpSystemOpgave.Data;
 using TECHCOOL.UI;
 
+namespace ErpSystemOpgave.Ui;
 
 
 public class CustomerUpdateScreen : Screen
