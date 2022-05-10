@@ -11,15 +11,15 @@ public class LandingPage
 
     public LandingPage()
     {
-        InputFields.Add(new ButtonField(
+        InputFields.Add(new Button(
             "Produkter/Lager".PadCenter(30),
             () => Screen.Display(new ProductListScreen()),
             "\t\t\t"));
-        InputFields.Add(new ButtonField(
+        InputFields.Add(new Button(
             "Kunder".PadCenter(30),
             () => Screen.Display(new CustomerListScreen()),
             "\t\t\t"));
-        InputFields.Add(new ButtonField(
+        InputFields.Add(new Button(
             "Salg".PadCenter(30),
             () => Screen.Display(new OrderListScreen()),
             "\t\t\t"));

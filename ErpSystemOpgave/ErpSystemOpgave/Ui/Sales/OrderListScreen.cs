@@ -47,8 +47,8 @@ public class OrderListScreen : Screen
             Clear();
             var confirm = false;
             var dialog = new Menu<bool>($"yeet order {c.OrderNumber}?");
-            dialog.InputFields.Add(new ButtonField("Yeet away", () => { confirm = true; dialog.Done = true; }));
-            dialog.InputFields.Add(new ButtonField("On second thought...", () => { dialog.Done = true; }));
+            dialog.InputFields.Add(new Button("Yeet away", () => { confirm = true; dialog.Done = true; }));
+            dialog.InputFields.Add(new Button("On second thought...", () => { dialog.Done = true; }));
             dialog.Show();
             if (confirm)
                 DataBase.Instance.DeleteSalesOrder(c.OrderNumber);
@@ -60,9 +60,9 @@ public class OrderListScreen : Screen
         //? Show a menu that asks if the order should be made for an existing customer
         //? or if a new customer should be created.
         var menu = new Menu<bool?>("Opret for eksisterende kunde eller opret?");
-        menu.InputFields.Add(new ButtonField("Eksisterende kunde", () => { menu.ReturnValue = false; menu.Done = true; }));
-        menu.InputFields.Add(new ButtonField("Ny Kunde", () => { menu.ReturnValue = true; menu.Done = true; }));
-        menu.InputFields.Add(new ButtonField("Tilbage", () => { menu.Done = true; }));
+        menu.InputFields.Add(new Button("Eksisterende kunde", () => { menu.ReturnValue = false; menu.Done = true; }));
+        menu.InputFields.Add(new Button("Ny Kunde", () => { menu.ReturnValue = true; menu.Done = true; }));
+        menu.InputFields.Add(new Button("Tilbage", () => { menu.Done = true; }));
         if (menu.Show() is not bool createNew) return;
 
         //? Open a page to create a customer or select one from the database, depending on the users choice
