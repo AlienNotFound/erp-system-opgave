@@ -2,7 +2,7 @@
 using ErpSystemOpgave.Data;
 using TECHCOOL.UI;
 
-namespace ErpSystemOpgave;
+namespace ErpSystemOpgave.Ui;
 
 public class CustomerDetailsScreen : Screen
 {

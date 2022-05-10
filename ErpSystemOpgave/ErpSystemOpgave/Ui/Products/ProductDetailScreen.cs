@@ -1,16 +1,16 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using ErpSystemOpgave;
-using System;
 using ErpSystemOpgave.Data;
 using TECHCOOL.UI;
 
-namespace ErpSystemOpgave;
+namespace ErpSystemOpgave.Ui;
 
 public class ProductDetailScreen : Screen
 {
     public int ProductId = ProductListScreen.SelectedId;
     public override string Title { get; set; } = "Produkt detaljer";
-    
+
     public readonly Product _product;
     public ProductDetailScreen(Product product)
     {

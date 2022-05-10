@@ -24,6 +24,7 @@ namespace ErpSystemOpgave.Data;
 public class Person
 {
     // ? Lav `ContactInfo` til sin egen klasse?
+    public Person() { }
     public Person(string firstName, string lastName, Address address, ContactInfo contactInfo)
     {
         FirstName = firstName;
@@ -32,10 +33,10 @@ public class Person
         ContactInfo = contactInfo;
     }
 
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
-    public Address Address { get; set; }
-    public ContactInfo ContactInfo { get; set; }
+    public string FirstName { get; set; } = "";
+    public string LastName { get; set; } = "";
+    public Address Address { get; set; } = new();
+    public ContactInfo ContactInfo { get; set; } = new();
     public string FullAddress => Address.ToString();
     public string FullName => $"{FirstName} {LastName}";
 }
