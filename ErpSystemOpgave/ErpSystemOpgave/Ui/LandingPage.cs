@@ -23,10 +23,15 @@ public class LandingPage
             "Salg".PadCenter(30),
             () => Screen.Display(new OrderListScreen()),
             "\t\t\t"));
+        InputFields.Add(new Button(
+            "Virksomheder".PadCenter(30),
+            () => Screen.Display(new CompanyListScreen()),
+            "\t\t\t"));
 
         Tooltips.Add("Inspicer lager.\nSe produktdetaljer\ntilfoj, opdater eller fjern produkter");
         Tooltips.Add("Se liste over kunder.\nSe kundedetaljer\ntilfoj, opdater eller fjern kunder");
         Tooltips.Add("Se ordrehistorik.\nInspicer ordrelinjer\ntilfoj, eller fjern ordre.");
+        Tooltips.Add("something something virksomhed");
     }
 
     private int Mod(int a, int b) => (a % b + b) % b;

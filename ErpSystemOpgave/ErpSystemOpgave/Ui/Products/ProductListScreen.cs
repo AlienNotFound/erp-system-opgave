@@ -23,7 +23,9 @@ public class ProductListScreen : Screen
             ("Avance", "AvanceKroner"),
             ("Avance procent", "AvancePercent"));
 
-        Console.WriteLine("\nTryk på ENTER på det valgte produkt, for at se detaljer\nTryk F2 for at redigere kunde");
+        Console.WriteLine(@"
+Tryk på ENTER på det valgte produkt, for at se detaljer
+Tryk F2 for at redigere produkt");
         listPage.AddKey(ConsoleKey.F2, c =>
         {
             Clear();
@@ -55,6 +57,13 @@ public class ProductListScreen : Screen
                 DataBase.Instance.InsertProduct(p);
             }
             // Display(new CustomerUpdateScreen("Updater produkt", c.ProductId));
+        });
+
+        //Delete product on F5
+        listPage.AddKey(ConsoleKey.F5, c =>
+        {
+            DataBase.Instance.DeleteProduct(c.ProductId);
+            Clear();
         });
 
         if (listPage.Select() is Product selected)
