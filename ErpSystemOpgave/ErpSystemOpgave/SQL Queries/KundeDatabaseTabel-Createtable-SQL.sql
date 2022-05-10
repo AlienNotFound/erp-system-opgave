@@ -1,3 +1,4 @@
+/* Create */
 USE H1PD021122_Gruppe3
 GO
 
@@ -31,3 +32,26 @@ CREATE TABLE Customers (
 		FOREIGN KEY(ContactId) REFERENCES Contacts(Id)
 )
 GO
+    
+    /* ALTERATIONS */    
+ALTER TABLE Customers
+DROP CONSTRAINT ContactId, AddressId
+    
+ALTER TABLE Customers
+    ADD CONSTRAINT fk_Contact
+        FOREIGN KEY (ContactId)
+        REFERENCES Contacts (Id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+
+        CONSTRAINT fk_Address
+        FOREIGN KEY (AddressId)
+        REFERENCES Addresses (Id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+
+SELECT Customers.*, ISNULL(LastPurchase,'0001-01-01') AS LastPurchase FROM Customers
+     LEFT JOIN LastPurchases ON CustomerId = Id
+
+SELECT Id, FirstName, LastName, AddressId, ContactId, ISNULL(LastPurchase,'0001-01-01') AS LastPurchase FROM Customers 
+LEFT JOIN LastPurchases ON CustomerId = Id WHERE Customers.Id = 1

@@ -20,11 +20,14 @@ public class CustomerListScreen : Screen
             ("Telefonnummer", "PhoneNumber"),
             ("Email", "Email"));
 
-        Console.WriteLine("\nTryk på ENTER på den valgte kunde, for at se detaljer");
+        Console.WriteLine("\nTryk på ENTER på den valgte kunde, for at se detaljer" +
+                          "\nTryk på F1 for at oprette en ny kunde" +
+                          "\nTryk på F2 for at redigere en kunde" +
+                          "\nTryk på F5 for at slette en kunde");
         listPage.AddKey(ConsoleKey.F1, c =>
         {
             Clear(this);
-            Customer customer = new Customer("","", new Address("", "", "",0, ""), new ContactInfo("", ""), 0, DateTime.MinValue);
+            Customer customer = new Customer();
             var addCustomer = new EditScreen<Customer>("Opret ny kunde", customer,
                 ("Fornavn", "FirstName"),
                 ("Efternavn", "LastName"),
@@ -79,70 +82,24 @@ public class CustomerListScreen : Screen
                 }
             };
             Clear(this);
-            //Display(new CustomerUpdateScreen("Updater kunde", c.CustomerId));
+            Display(customerListScreen);
         });
-        
-        /*switch (Console.ReadKey().Key)
+        listPage.AddKey(ConsoleKey.F5, c =>
         {
-            case ConsoleKey.Backspace:
-                Screen.Display(customerListScreen);
-                break;
-            case ConsoleKey.F1:
+            Console.WriteLine("Du er ved at slette kunde: " + c.FullName + ". Dette kan ikke fortrydes." + 
+                              "\nTryk på ENTER for at forsætte");
+            if (Console.ReadKey().Key == ConsoleKey.Enter)
+            {
+                db.DeleteCustomerById(c.CustomerId);
                 Clear(this);
-                Customer customer = new Customer("", "", null, null, 0, DateTime.MinValue);
-                if (new EditScreen<Customer>("Opret ny kunde", customer,
-                        ("Fornavn", "FirstName"),
-                        ("Efternavn", "LastName"),
-                        ("Vej", "Address.Street"),
-                        ("Husnummer", "Address.HouseNumber"),
-                        ("Postnummer", "Address.ZipCode"),
-                        ("By", "Address.City"),
-                        ("Telefonnummer", "ContactInfo.PhoneNumber"),
-                        ("Email", "contactInfo.Email")).Show() is Customer created)
-                {
-                    db.InsertCustomer(
-                        created.FirstName,
-                        created.LastName,
-                        created.Address.Street,
-                        created.Address.HouseNumber,
-                        created.Address.City,
-                        created.Address.ZipCode,
-                        created.Address.Country,
-                        created.ContactInfo.PhoneNumber,
-                        created.ContactInfo.Email!);
-                }
                 Display(customerListScreen);
-                break;
-            case ConsoleKey.F2:
+            }
+            else if (Console.ReadKey().Key == ConsoleKey.Escape)
+            {
                 Clear(this);
-                if (db.GetCustomerById(customer.CustomerId) is Customer cu)
-                {
-                    if (new EditScreen<Customer>("Rediger kundeoplysninger for " + customer.FullName, cu,
-                            ("Fornavn", "FirstName"),
-                            ("Efternavn", "LastName"),
-                            ("Vej", "Address.Street"),
-                            ("Husnummer", "Address.HouseNumber"),
-                            ("Postnummer", "Address.ZipCode"),
-                            ("By", "Address.City"),
-                            ("Telefonnummer", "ContactInfo.PhoneNumber"),
-                            ("Email", "ContactInfo.Email")).Show() is Customer updated)
-                    {
-                        db.UpdateCustomer(
-                            updated.CustomerId,
-                            updated.FirstName,
-                            updated.LastName,
-                            updated.Address.Street,
-                            updated.Address.HouseNumber,
-                            updated.Address.City,
-                            updated.Address.ZipCode,
-                            updated.Address.Country,
-                            updated.ContactInfo.PhoneNumber,
-                            updated.ContactInfo.Email!);
-                    }
-                };
                 Display(customerListScreen);
-                break;
-        }*/
+            }
+        });
 
         if (listPage.Select() is Customer selected)
         {

@@ -21,7 +21,7 @@ public class CustomerUpdateScreen : Screen
     protected override void Draw()
     {
         db = DataBase.Instance;
-        Customer customer = db.GetCustomerFromId(customer_id) ?? throw new Exception("Invalid customer ID " + customer_id);
+        Customer customer = db.GetCustomerById(customer_id) ?? throw new Exception("Invalid customer ID " + customer_id);
         editScreen = new(
             "Opdater kunde", customer,
             ("first name", "FirstName"),
