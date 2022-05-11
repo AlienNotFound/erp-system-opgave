@@ -20,7 +20,6 @@ public class OrderLineListScreen : Screen
 
     private void CreateOrderLine()
     {
-        Console.WriteLine("adding {0}", OrderNumber);
         Console.ReadKey();
         var product = Program.CreateListPageWith(
             DataBase.Instance.GetAllProducts(),
@@ -37,15 +36,9 @@ public class OrderLineListScreen : Screen
             ("Antal", "Quantity"));
         if (editscreen.Show() is SalesOrderLine ol)
         {
-            Console.WriteLine("adding {0}", OrderNumber);
             Console.ReadKey();
             DataBase.Instance.InsertOrderLine(product.ProductId, ol.Quantity, ol.Price, OrderNumber);
             listPage = Refresh();
-        }
-        else
-        {
-            Console.WriteLine("didn't find order in db: {0}", OrderNumber);
-            Console.ReadKey();
         }
 
     }
