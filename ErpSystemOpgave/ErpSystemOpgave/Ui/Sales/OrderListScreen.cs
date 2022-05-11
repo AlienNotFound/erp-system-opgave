@@ -128,8 +128,10 @@ public class OrderListScreen : Screen
         Clear(this);
 
         Console.WriteLine("\nTryk på ENTER på den valgte ordre, for at se detaljer\nTryk F2 for at redigere kunde");
-        if (listPage.Select() is not { } selected) {
-            Quit();
+        if (listPage.Select() is not { } selected)
+        {
+            if (!listPage.redraw)
+                Quit();
             return;
         }
         Clear();

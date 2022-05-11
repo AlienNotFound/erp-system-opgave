@@ -8,11 +8,9 @@ public class CompanyListScreen : Screen
     public static int SelectedId;
     public override string Title { get; set; } = "Virksomheder";
 
-    private ListPage<Company> listPage;
-
-    public CompanyListScreen()
+    protected override void Draw()
     {
-        listPage = Program.CreateListPageWith(
+        var listPage = Program.CreateListPageWith(
             DataBase.Instance.GetAllCompanies(),
             ("Navn", "Name"),
             ("Adresse", "Address"),
@@ -40,18 +38,16 @@ public class CompanyListScreen : Screen
             .Show() is { } updated)
                 DataBase.Instance.InsertCompany(updated);
         });
-
-    }
-
-    protected override void Draw() {
         Clear();
         Console.WriteLine(@"
 Enter:  Vis
 F1:     Opret
 F2:     Rediger
 F5      Slet");
-        if (listPage.Select() is not { } selected) {
-            Quit();
+        if (listPage.Select() is not { } selected)
+        {
+            if (!listPage.redraw)
+                Quit();
             return;
         };
         Display(new CustomerDetailsScreen(selected.Id));

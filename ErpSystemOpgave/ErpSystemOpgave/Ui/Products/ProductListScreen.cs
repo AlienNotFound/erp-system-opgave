@@ -8,8 +8,8 @@ public class ProductListScreen : Screen
     public static int SelectedId;
     public override string Title { get; set; } = "Produkter";
 
-    protected override void Draw() {
-        var refresh = false;
+    protected override void Draw()
+    {
         Clear(this);
         var listPage = Program.CreateListPageWith(
             DataBase.Instance.GetAllProducts(),
@@ -40,7 +40,6 @@ Tryk F2 for at redigere produkt");
                 {
                     DataBase.Instance.UpdateProduct(p);
                     Clear();
-                    listPage.Draw();
                 }
             // Display(new CustomerUpdateScreen("Updater produkt", c.ProductId));
         });
@@ -58,7 +57,6 @@ Tryk F2 for at redigere produkt");
             {
                 DataBase.Instance.InsertProduct(p);
                 Clear();
-                listPage.Draw();
             }
         });
 
@@ -69,8 +67,10 @@ Tryk F2 for at redigere produkt");
             Clear();
         });
 
-        if (listPage.Select() is not { } selected) {
-            Quit();
+        if (listPage.Select() is not { } selected)
+        {
+            if (!listPage.redraw)
+                Quit();
             return;
         }
         Clear();

@@ -7,8 +7,11 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
+  <!-- <ItemGroup>
     <PackageReference Include="TECHCOOL" Version="1.3.2" />
+  </ItemGroup> -->
+  <ItemGroup>
+    <ProjectReference Include="..\TECHCOOL\TECHCOOL.csproj" />
   </ItemGroup>
 
 </Project>

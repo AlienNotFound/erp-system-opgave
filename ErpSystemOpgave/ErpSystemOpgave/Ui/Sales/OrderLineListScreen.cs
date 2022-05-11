@@ -68,7 +68,8 @@ public class OrderLineListScreen : Screen
     {
         Clear();
         Console.WriteLine("Enter\t\tInspicer Ordrelinie\nF1\t\tTilføj ny Ordrelinje\nF5\t\tSlet Ordrelinje");
-        if (!rows.Any()) {
+        if (!rows.Any())
+        {
             Clear();
             var confirm = false;
             var dialog = new Menu<bool>($"Der er ingen ordrelinjer for {OrderNumber}.\nVil du oprette en?");
@@ -78,7 +79,7 @@ public class OrderLineListScreen : Screen
             if (confirm)
                 CreateOrderLine();
         }
-        else if (listPage.Select() is SalesOrderLine orderLine)
+        else if (listPage.Select() is { } orderLine)
         {
             Console.WriteLine("bet you expected a details view, huh?");
             Console.ReadKey();
