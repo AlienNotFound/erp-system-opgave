@@ -12,7 +12,6 @@ public class CompanyListScreen : Screen
 
     public CompanyListScreen()
     {
-        Clear(this);
         listPage = Program.CreateListPageWith(
             DataBase.Instance.GetAllCompanies(),
             ("Navn", "Name"),
@@ -23,13 +22,13 @@ public class CompanyListScreen : Screen
         listPage.AddKey(ConsoleKey.F2, c =>
         {
             Clear();
-            if (DataBase.Instance.GetCompanyById(c.Id) is Company p)
-                if (new EditScreen<Company>("Rediger Virksomhed", p,
-                    ("Navn", "Name"),
-                    ("Valuta", "Currency"),
-                    ("Adresse ID", "AddressId"))
-                .Show() is Company updated)
-                    DataBase.Instance.UpdateCompany(updated);
+            if (DataBase.Instance.GetCompanyById(c.Id) is not { } p) return;
+            if (new EditScreen<Company>("Rediger Virksomhed", p,
+                        ("Navn", "Name"),
+                        ("Valuta", "Currency"),
+                        ("Adresse ID", "AddressId"))
+                    .Show() is { } updated)
+                DataBase.Instance.UpdateCompany(updated);
         });
         listPage.AddKey(ConsoleKey.F1, _ =>
         {
@@ -38,18 +37,23 @@ public class CompanyListScreen : Screen
                 ("Navn", "Name"),
                 ("Valuta", "Currency"),
                 ("Adresse ID", "AddressId"))
-            .Show() is Company updated)
-                DataBase.Instance.UpdateCompany(updated);
+            .Show() is { } updated)
+                DataBase.Instance.InsertCompany(updated);
         });
+
     }
 
-    protected override void Draw()
-    {
-
-        if (listPage.Select() is Company selected)
-        {
-            Clear();
-            Display(new CustomerDetailsScreen(selected.Id));
-        }
+    protected override void Draw() {
+        Clear();
+        Console.WriteLine(@"
+Enter:  Vis
+F1:     Opret
+F2:     Rediger
+F5      Slet");
+        if (listPage.Select() is not { } selected) {
+            Quit();
+            return;
+        };
+        Display(new CustomerDetailsScreen(selected.Id));
     }
 }

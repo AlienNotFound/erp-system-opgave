@@ -13,23 +13,22 @@ public class Company
 
     public static Company FromReader(IDataReader reader, ref int offset)
     {
-        var Id = reader.GetInt32(offset++);
-        var Name = reader.GetString(offset++);
-        var AddressId = reader.GetInt32(offset++);
-        var Currency = reader.GetString(offset++);
-        return new()
-        {
-            Id = reader.GetInt32(offset++),
-            Name = reader.GetString(offset++),
-            Address = DataBase.Instance.GetAddressById(AddressId)!,
-            AddressId = AddressId,
-            Currency = reader.GetString(offset++)
+        var id = reader.GetInt32(offset++);
+        var name = reader.GetString(offset++);
+        var addressId = reader.GetInt32(offset++);
+        var currency = reader.GetString(offset++);
+        return new Company {
+            Id = id,
+            Name = name,
+            Address = DataBase.Instance.GetAddressById(addressId)!,
+            AddressId = addressId,
+            Currency = currency
         };
     }
 
 
-    public int Id { get; set; } = default;
-    public int AddressId { get; set; } = default;
+    public int Id { get; set; }
+    public int AddressId { get; set; }
 
     public Address Address { get; set; } = new();
     public string Name { get; set; } = "";
@@ -38,10 +37,7 @@ public class Company
     public SqlParameter[] SqlParameters => new SqlParameter[]{
         new("@id", Id),
         new("@name", Name),
-        new("@addressId", Address.Id),
+        new("@addressId", AddressId),
         new("@currency", Currency)
     };
-
-    public Company() { }
-
 }

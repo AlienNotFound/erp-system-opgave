@@ -63,7 +63,7 @@ public class OrderListScreen : Screen
         menu.InputFields.Add(new Button("Eksisterende kunde", () => { menu.ReturnValue = false; menu.Done = true; }));
         menu.InputFields.Add(new Button("Ny Kunde", () => { menu.ReturnValue = true; menu.Done = true; }));
         menu.InputFields.Add(new Button("Tilbage", () => { menu.Done = true; }));
-        if (menu.Show() is not bool createNew) return;
+        if (menu.Show() is not { } createNew) return;
 
         //? Open a page to create a customer or select one from the database, depending on the users choice
         var customer = createNew ? GetNewCustomer() : GetExistingCustomer();
@@ -128,11 +128,11 @@ public class OrderListScreen : Screen
         Clear(this);
 
         Console.WriteLine("\nTryk på ENTER på den valgte ordre, for at se detaljer\nTryk F2 for at redigere kunde");
-
-        if (listPage.Select() is SalesOrderHeader selected)
-        {
-            Clear();
-            Display(new SalesOrderHearderScreen());
+        if (listPage.Select() is not { } selected) {
+            Quit();
+            return;
         }
+        Clear();
+        Display(new SalesOrderHearderScreen(selected.OrderNumber));
     }
 }

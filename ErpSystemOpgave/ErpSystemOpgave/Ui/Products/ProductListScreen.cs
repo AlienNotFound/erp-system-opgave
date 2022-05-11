@@ -8,8 +8,8 @@ public class ProductListScreen : Screen
     public static int SelectedId;
     public override string Title { get; set; } = "Produkter";
 
-    protected override void Draw()
-    {
+    protected override void Draw() {
+        var refresh = false;
         Clear(this);
         var listPage = Program.CreateListPageWith(
             DataBase.Instance.GetAllProducts(),
@@ -39,6 +39,8 @@ Tryk F2 for at redigere produkt");
                     ("Købspris", "BuyPrice")).Show() is Product updated)
                 {
                     DataBase.Instance.UpdateProduct(p);
+                    Clear();
+                    listPage.Draw();
                 }
             // Display(new CustomerUpdateScreen("Updater produkt", c.ProductId));
         });
@@ -52,11 +54,12 @@ Tryk F2 for at redigere produkt");
                 ("Enhed", "Unit"),
                 ("Plads", "Location"),
                 ("Salgspris", "SalePrice"),
-                ("Købspris", "BuyPrice")).Show() is Product p)
+                ("Købspris", "BuyPrice")).Show() is { } p)
             {
                 DataBase.Instance.InsertProduct(p);
+                Clear();
+                listPage.Draw();
             }
-            // Display(new CustomerUpdateScreen("Updater produkt", c.ProductId));
         });
 
         //Delete product on F5
@@ -66,11 +69,12 @@ Tryk F2 for at redigere produkt");
             Clear();
         });
 
-        if (listPage.Select() is Product selected)
-        {
-            Clear();
-            if (DataBase.Instance.GetProductById(selected.ProductId) is Product p)
-                Display(new ProductDetailScreen(p));
+        if (listPage.Select() is not { } selected) {
+            Quit();
+            return;
         }
+        Clear();
+        if (DataBase.Instance.GetProductById(selected.ProductId) is { } p)
+            Display(new ProductDetailScreen(p));
     }
 }

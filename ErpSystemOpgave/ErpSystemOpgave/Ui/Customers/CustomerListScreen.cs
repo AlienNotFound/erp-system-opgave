@@ -24,10 +24,11 @@ public class CustomerListScreen : Screen
             Display(new CustomerUpdateScreen("Updater kunde", c.CustomerId));
         });
 
-        if (listPage.Select() is Customer selected)
-        {
-            Clear();
-            Display(new CustomerDetailsScreen(selected.CustomerId));
+        if (listPage.Select() is not { } selected) {
+            Quit();
+            return;
         }
+        Clear();
+        Display(new CustomerDetailsScreen(selected.CustomerId));
     }
 }

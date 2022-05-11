@@ -33,8 +33,8 @@ public class ProductDetailScreen : Screen
         // !! Dette er lidt et hack. Her bruger vi en `ListPage` som menu,
         // !! da den dedikerede `Menu` rydder skaermen.
         Program.ShowMenu(
-            ("Go back", () => this.Quit()),
-            ("Update", () => Screen.Display(new ProductUpdateScreen(_product)))
+            ("Go back", () => Quit()),
+            ("Update", () => Display(new ProductUpdateScreen(_product)))
         );
     }
 }
