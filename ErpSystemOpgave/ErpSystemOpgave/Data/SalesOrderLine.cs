@@ -35,7 +35,8 @@ public class SalesOrderLine
         Id = id;
         ProductId = productId;
         Price = price;
-        ProductName = productName;
+        var product = DataBase.Instance.GetProductById(productId);
+        ProductName = product!.Name;
         ProductDescription = productDescription;
         Unit = unit;
         Quantity = quantity;
