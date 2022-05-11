@@ -45,7 +45,7 @@ public class CustomerDetailsScreen : Screen
         if (key == ConsoleKey.Backspace)
         {
             Clear(this);
-            Display(customerListScreen);
+            Quit();
         }
         
         Program.CreateDetailsView(customer,

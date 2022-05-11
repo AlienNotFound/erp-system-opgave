@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using Microsoft.VisualBasic;
-using TECHCOOL.UI;
+﻿using TECHCOOL.UI;
 namespace ErpSystemOpgave.Data;
 
 public class SalesOrderHearderScreen : Screen

@@ -97,12 +97,13 @@ public class CustomerListScreen : Screen
             else if (Console.ReadKey().Key == ConsoleKey.Escape)
             {
                 Clear(this);
-                Display(customerListScreen);
+                Quit();
             }
         });
 
         if (listPage.Select() is not { } selected) {
-            Quit();
+            if(!listPage.redraw)
+                Quit();
             return;
         }
         Clear();
