@@ -20,7 +20,6 @@ public class OrderLineListScreen : Screen
 
     private void CreateOrderLine()
     {
-        Console.WriteLine("adding {0}", OrderNumber);
         Console.ReadKey();
         var product = Program.CreateListPageWith(
             DataBase.Instance.GetAllProducts(),
@@ -37,15 +36,9 @@ public class OrderLineListScreen : Screen
             ("Antal", "Quantity"));
         if (editscreen.Show() is SalesOrderLine ol)
         {
-            Console.WriteLine("adding {0}", OrderNumber);
             Console.ReadKey();
             DataBase.Instance.InsertOrderLine(product.ProductId, ol.Quantity, ol.Price, OrderNumber);
             listPage = Refresh();
-        }
-        else
-        {
-            Console.WriteLine("didn't find order in db: {0}", OrderNumber);
-            Console.ReadKey();
         }
 
     }
@@ -68,7 +61,8 @@ public class OrderLineListScreen : Screen
     {
         Clear();
         Console.WriteLine("Enter\t\tInspicer Ordrelinie\nF1\t\tTilføj ny Ordrelinje\nF5\t\tSlet Ordrelinje");
-        if (!rows.Any()) {
+        if (!rows.Any())
+        {
             Clear();
             var confirm = false;
             var dialog = new Menu<bool>($"Der er ingen ordrelinjer for {OrderNumber}.\nVil du oprette en?");
@@ -78,7 +72,7 @@ public class OrderLineListScreen : Screen
             if (confirm)
                 CreateOrderLine();
         }
-        else if (listPage.Select() is SalesOrderLine orderLine)
+        else if (listPage.Select() is { } orderLine)
         {
             Console.WriteLine("bet you expected a details view, huh?");
             Console.ReadKey();

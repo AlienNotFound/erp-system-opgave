@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErpSystemOpgave", "ErpSyste
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestErp", "UnitTestErp\UnitTestErp.csproj", "{66112330-B7DB-4DA6-AF05-3DA2CFB63755}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TECHCOOL", "TECHCOOL\TECHCOOL.csproj", "{c187ced2-8286-444a-9f49-4ba4fb75be53}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

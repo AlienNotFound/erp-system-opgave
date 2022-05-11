@@ -251,6 +251,7 @@ public sealed class DataBase
     ///////////////////////////////////////////////////////////////////////////
     /////////////         Orders          /////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////
+
     public int InsertSalesOrderHeader(int customerId, string state, DateTime creationTime)
     {
         SqlCommand cmd = connection.CreateCommand();
@@ -359,4 +360,54 @@ public sealed class DataBase
         cmd.Parameters.AddWithValue("@id", id);
         cmd.ExecuteNonQuery();
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    /////////////         Companies          //////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
+
+
+    public IEnumerable<Company> GetAllCompanies()
+    {
+        using SqlCommand cmd = new("SELECT * FROM Companies", connection);
+        using var dt = cmd.ExecuteReader();
+        List<Company> prods = new();
+        while (dt.Read())
+            prods.Add(Company.FromReader(dt));
+        return prods;
+    }
+
+    public Company? GetCompanyById(int productId)
+    {
+        using SqlCommand cmd = new("SELECT * FROM Companies WHERE ID = @id", connection);
+        cmd.Parameters.AddWithValue("@id", productId);
+        using var dt = cmd.ExecuteReader();
+        return dt.Read() ? Company.FromReader(dt) : null;
+    }
+
+    public void InsertCompany(Company company)
+    {
+        using SqlCommand cmd = new("INSERT INTO Companies (name, addressId, currency) VALUES (@name, @addressId, @currency)", connection);
+        cmd.Parameters.AddRange(company.SqlParameters);
+        cmd.ExecuteNonQuery();
+    }
+    public void UpdateCompany(Company Companies)
+    {
+        SqlCommand cmd = new(@"
+            UPDATE Companies SET 
+                name = @name, 
+                AddressId = @addressId 
+                Currency = @currency
+            WHERE id = @id", connection);
+        cmd.Parameters.AddRange(Companies.SqlParameters);
+        cmd.ExecuteNonQuery();
+    }
+    public void DeleteCompany(int id)
+    {
+        SqlCommand cmd = new("DELETE FROM products WHERE id = @id", connection);
+        cmd.Parameters.AddWithValue("@id", id);
+        cmd.ExecuteNonQuery();
+    }
+
+
+
 }

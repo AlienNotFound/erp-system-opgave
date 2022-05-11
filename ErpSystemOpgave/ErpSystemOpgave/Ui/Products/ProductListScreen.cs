@@ -23,7 +23,9 @@ public class ProductListScreen : Screen
             ("Avance", "AvanceKroner"),
             ("Avance procent", "AvancePercent"));
 
-        Console.WriteLine("\nTryk på ENTER på det valgte produkt, for at se detaljer\nTryk F2 for at redigere kunde");
+        Console.WriteLine(@"
+Tryk på ENTER på det valgte produkt, for at se detaljer
+Tryk F2 for at redigere produkt");
         listPage.AddKey(ConsoleKey.F2, c =>
         {
             Clear();
@@ -37,6 +39,7 @@ public class ProductListScreen : Screen
                     ("Købspris", "BuyPrice")).Show() is Product updated)
                 {
                     DataBase.Instance.UpdateProduct(p);
+                    Clear();
                 }
             // Display(new CustomerUpdateScreen("Updater produkt", c.ProductId));
         });
@@ -50,18 +53,28 @@ public class ProductListScreen : Screen
                 ("Enhed", "Unit"),
                 ("Plads", "Location"),
                 ("Salgspris", "SalePrice"),
-                ("Købspris", "BuyPrice")).Show() is Product p)
+                ("Købspris", "BuyPrice")).Show() is { } p)
             {
                 DataBase.Instance.InsertProduct(p);
+                Clear();
             }
-            // Display(new CustomerUpdateScreen("Updater produkt", c.ProductId));
         });
 
-        if (listPage.Select() is Product selected)
+        //Delete product on F5
+        listPage.AddKey(ConsoleKey.F5, c =>
         {
+            DataBase.Instance.DeleteProduct(c.ProductId);
             Clear();
-            if (DataBase.Instance.GetProductById(selected.ProductId) is Product p)
-                Display(new ProductDetailScreen(p));
+        });
+
+        if (listPage.Select() is not { } selected)
+        {
+            if (!listPage.redraw)
+                Quit();
+            return;
         }
+        Clear();
+        if (DataBase.Instance.GetProductById(selected.ProductId) is { } p)
+            Display(new ProductDetailScreen(p));
     }
 }
