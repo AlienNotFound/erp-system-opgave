@@ -14,23 +14,41 @@ public class CustomerUpdateScreen : Screen
     public CustomerUpdateScreen(string title, int customer_id)
     {
         Title = title;
-        db = DataBase.Instance;
         this.customer_id = customer_id;
-        Customer customer = db.GetCustomerFromId(customer_id) ?? throw new Exception("Invalid customer ID " + customer_id);
+
+    }
+
+    protected override void Draw()
+    {
+        db = DataBase.Instance;
+        Customer customer = db.GetCustomerById(customer_id) ?? throw new Exception("Invalid customer ID " + customer_id);
         editScreen = new(
             "Opdater kunde", customer,
             ("first name", "FirstName"),
             ("last name", "LastName"),
             ("Vej", "Address.Street"),
-            ("Nr.", "Address.HouseNumber"),
+            ("Husnummer", "Address.HouseNumber"),
+            ("Postnummer", "Address.ZipCode"),
             ("By", "Address.City"),
-            ("Phone", "ContactInfo.PhoneNumber"),
-            ("Mail", "ContactInfo.Email"));
+            ("Telefonnummer", "ContactInfo.PhoneNumber"),
+            ("Email", "ContactInfo.Email")
+        );
         editScreen.Show();
-        Quit();
+        db.UpdateCustomer(customer.CustomerId,
+            customer.FirstName,
+            customer.LastName, 
+            customer.Address.Street,
+            customer.Address.HouseNumber,
+            customer.Address.City,
+            customer.Address.ZipCode,
+            customer.Address.Country,
+            customer.ContactInfo.PhoneNumber,
+            customer.ContactInfo.Email!
+        );
+        
+        Console.WriteLine(customer.FullName + " blev opdateret!");
+        Console.WriteLine("Tryk på BACKSPACE for at vende tilbage til kundelisten");
     }
-
-    protected override void Draw() { }
 }
 
 record UpdateItem(string Name, string Value);

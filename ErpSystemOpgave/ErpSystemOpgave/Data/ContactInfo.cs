@@ -28,5 +28,5 @@ public class ContactInfo
     public string PhoneNumber { get; set; } = "";
     public string? Email { get; set; } = "";
 
-    public override string ToString() => $"Tlf: {PhoneNumber} Mail: {Email,16}";
+    public override string ToString() => $"Tlf: {PhoneNumber,11}|    Mail: {Email,16}";
 }
